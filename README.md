@@ -5,3 +5,4 @@
 
 This repository contains the codebase for the exercise sheets covered in the lecture "Computational Quantum Dynamics" from the summer semester 2026. It will be updated on a weekly basis to contain sample solutions to all posted exercises. New sheets are uploaded each Monday.
 Optional sheet submissions are due the following Monday, 8pm.
+The tutorials will take place in SR 5 Physik, Helmholtzweg 4, on Tuesdays, 4-6pm.

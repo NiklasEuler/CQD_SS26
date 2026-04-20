@@ -39,7 +39,7 @@ def plot_eigenstate(n, x, evals, evecs):
     ax.set_xlim(-5, 5)
     ax.set_ylim(0, 0.6)
     # add labels and legends
-    ax.set_title("$E_n=$"+f'{evals[n]:.{sig_digits}f}')
+    ax.set_title(f"$E_n={evals[n]:.{sig_digits}f}$")
     ax.set_xlabel("$x$")
     ax.set_ylabel("$|\\phi_n(x)|^2$")
     

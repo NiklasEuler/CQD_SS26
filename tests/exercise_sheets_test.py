@@ -1,6 +1,6 @@
+import os
 import subprocess
 import tempfile
-import matplotlib
 
 class Test_exercise_sheets:
 
@@ -23,6 +23,7 @@ class Test_exercise_sheets:
             subprocess.run(
                 ["python3", f"{temp_dir}/exercise1.py"],
                 check=True,
+                env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1.ipynb runs without errors.
 
 
@@ -45,4 +46,5 @@ class Test_exercise_sheets:
             subprocess.run(
                 ["python3", f"{temp_dir}/exercise1.py"],
                 check=True,
+                env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1_sol.ipynb runs without errors.

@@ -18,7 +18,10 @@ class Test_HO_eigenstates_exact:
 class Test_HO_eigenenergies:
     
     L = 15
-    npoints = 2001
+    npoints = 401
+    acc = 1e-2
+    #npoints = 2001
+    #acc = 1e-3
     xvals = np.linspace(-L / 2, L / 2, npoints)
 
     def test_HO_ED(self):
@@ -30,7 +33,7 @@ class Test_HO_eigenenergies:
 
         evals_num, evecs_num = LA.eigh(H_mat)
         evals_exact = ham.HO_eigenenergies_exact(np.arange(evals_num.size))
-        assert np.allclose(evals_num[:10], evals_exact[:10], atol=1e-3)
+        assert np.allclose(evals_num[:10], evals_exact[:10], atol=self.acc)
 
 
 

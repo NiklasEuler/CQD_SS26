@@ -63,7 +63,11 @@ def H_kinetic_sparse(x):
 
     main_diag = np.ones(n_points)
     off_diag = -0.5 * np.ones(n_points - 1)
-    return sparse.diags([main_diag, off_diag, off_diag], [0, 1, -1]) / (dx * dx)
+    H_kin = sparse.diags(
+        diagonals = [main_diag, off_diag, off_diag],
+        offsets = [0, 1, -1],
+    ) / (dx * dx)
+    return H_kin
 
 def HO_potential_sparse(x):
     """

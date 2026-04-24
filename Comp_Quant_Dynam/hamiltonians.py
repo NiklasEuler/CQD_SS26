@@ -1,6 +1,7 @@
 import numpy as np   # standard numerics library
 import math
 from scipy.special import hermite as herm
+import scipy.sparse as sparse # routines for sparse matrices
 
 
 #################### Solution sheet 1 ####################
@@ -44,3 +45,30 @@ def HO_potential(x):
     """
     
     return 0.5 * np.diag(x ** 2)
+
+
+#################### Solution sheet 2 ####################
+
+
+def H_kinetic_sparse(x):
+    """
+    Returns the kinetic energy operator of the quantum harmonic oscillator in the position basis for a grid 'x' as a sparse matrix.
+    The kinetic energy operator is represented as a finite difference matrix approximating the second derivative, which is given by the formula:
+    T = - (ħ^2 / 2m) * d^2/dx^2, or in numerical units, T = -0.5 * d^2/dx^2. The second derivative can be approximated using the central difference formula:
+    d^2ψ/dx^2 ≈ (ψ(x + dx) - 2ψ(x) + ψ(x - dx)) / (dx^2).
+    """
+
+    n_points = len(x) # number of grid points
+    dx = x[1] - x[0] # grid spacing
+
+    main_diag = np.ones(n_points)
+    off_diag = -0.5 * np.ones(n_points - 1)
+    return sparse.diags([main_diag, off_diag, off_diag], [0, 1, -1]) / (dx * dx)
+
+def HO_potential_sparse(x):
+    """
+    Returns the potential energy operator of the quantum harmonic oscillator in the position basis for a grid 'x' as a sparse matrix.
+    The potential energy operator is represented as a diagonal matrix with elements given by V(x) = 0.5 * x^2.
+    """
+    
+    return sparse.diags(0.5 * x ** 2)

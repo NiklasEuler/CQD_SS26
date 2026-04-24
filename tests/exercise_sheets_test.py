@@ -48,3 +48,26 @@ class Test_exercise_sheets:
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1_sol.ipynb runs without errors.
+
+
+    def test_exercise_solution_2(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            subprocess.run(
+                [
+                    "jupyter",
+                    "nbconvert",
+                    "--to",
+                    "script",
+                    "--output",
+                    "exercise2",
+                    "--output-dir",
+                    temp_dir,
+                    "Solutions/exercise2_sol.ipynb",
+                ],
+                check=True,
+            )
+            subprocess.run(
+                ["python3", f"{temp_dir}/exercise2.py"],
+                check=True,
+                env={**os.environ, "MPLBACKEND": "Agg"},
+            )  # Check that exercise2_sol.ipynb runs without errors.

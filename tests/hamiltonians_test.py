@@ -47,17 +47,25 @@ class Test_HO_sparse_eigenenergies:
     L = 15
     npoints = 401
     acc = 1e-2
+    k = 10
     xvals, dx = create_xvals(L, npoints)
 
-    def test_HO_ED(self):
+    H_pot_sparse = ham.HO_potential_sparse(xvals)
+    H_kin_sparse = ham.H_kinetic_sparse(xvals)
+
+    H_mat = H_pot_sparse + H_kin_sparse
+    evals_num, evecs_num = eigsh(H_mat, k=k, which='SA')
+
+    def test_HO_ED_evals(self):
         
-        H_pot_sparse = ham.HO_potential_sparse(self.xvals)
-        H_kin_sparse = ham.H_kinetic_sparse(self.xvals)
+        evals_exact = ham.HO_eigenenergies_exact(np.arange(self.evals_num.size))
+        assert np.allclose(self.evals_num, evals_exact, atol=self.acc)
 
-        H_mat = H_pot_sparse + H_kin_sparse
+    def test_HO_ED_evecs(self):
 
-        evals_num, evecs_num = eigsh(H_mat, k=10, which='SA')
-        evals_exact = ham.HO_eigenenergies_exact(np.arange(evals_num.size))
-        assert np.allclose(evals_num[:10], evals_exact[:10], atol=self.acc)
-
-
+        evecs_dense = LA.eig(self.H_mat.toarray())[1][:, :self.k]
+        overlaps = np.zeros(self.k, dtype=complex)
+        for i in range(self.k):
+            overlap = np.vdot(self.evecs_num[:, i], evecs_dense[:, i])
+            overlaps[i] = overlap
+        assert np.allclose(np.abs(overlaps), 1) # check that the eigenvectors are approximately the same, up to a global phase

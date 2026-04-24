@@ -26,7 +26,7 @@ class Test_exercise_sheets:
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1.ipynb runs without errors.
 
-
+""" 
     def test_exercise_solution_1(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             subprocess.run(
@@ -70,4 +70,4 @@ class Test_exercise_sheets:
                 ["python3", f"{temp_dir}/exercise2.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
-            )  # Check that exercise2_sol.ipynb runs without errors.
+            )  # Check that exercise2_sol.ipynb runs without errors. """

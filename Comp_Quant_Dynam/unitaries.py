@@ -11,8 +11,8 @@ def t_evol_eigenbasis(init_coeffs, t, evals, evecs):
     """
 
     phase_factors = np.exp(-1j * evals * t) # compute the phase factors for each eigenstate
-    evol_coeffs = np.sum(init_coeffs * evecs * phase_factors, axis=1)
-    return evol_coeffs
+    evolved_eigen_coeffs = init_coeffs * phase_factors
+    return evecs @ evolved_eigen_coeffs
 
 def init_coeffs_eigenbasis(psi0, evecs):
     """

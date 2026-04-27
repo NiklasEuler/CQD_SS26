@@ -21,12 +21,11 @@ class Test_exercise_sheets:
                 check=True,
             )
             subprocess.run(
-                ["python3", f"{temp_dir}/exercise1.py"],
+                ["ipython", f"{temp_dir}/exercise1.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1.ipynb runs without errors.
 
-""" 
     def test_exercise_solution_1(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             subprocess.run(
@@ -36,7 +35,7 @@ class Test_exercise_sheets:
                     "--to",
                     "script",
                     "--output",
-                    "exercise1",
+                    "exercise1_sol",
                     "--output-dir",
                     temp_dir,
                     "Solutions/exercise1_sol.ipynb",
@@ -44,7 +43,7 @@ class Test_exercise_sheets:
                 check=True,
             )
             subprocess.run(
-                ["python3", f"{temp_dir}/exercise1.py"],
+                ["ipython", f"{temp_dir}/exercise1_sol.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1_sol.ipynb runs without errors.
@@ -59,7 +58,7 @@ class Test_exercise_sheets:
                     "--to",
                     "script",
                     "--output",
-                    "exercise2",
+                    "exercise2_sol",
                     "--output-dir",
                     temp_dir,
                     "Solutions/exercise2_sol.ipynb",
@@ -67,7 +66,7 @@ class Test_exercise_sheets:
                 check=True,
             )
             subprocess.run(
-                ["python3", f"{temp_dir}/exercise2.py"],
+                ["ipython", f"{temp_dir}/exercise2_sol.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
-            )  # Check that exercise2_sol.ipynb runs without errors. """
+            )  # Check that exercise2_sol.ipynb runs without errors."""

@@ -44,3 +44,20 @@ def plot_eigenstate(n, x, evals, evecs):
     ax.set_ylabel("$|\\phi_n(x)|^2$")
     
     return fig
+
+
+#################### Solution sheet 2 ####################
+
+def animate(t, *args):
+    """
+    Animates the time evolution of a wavefunction for a given time 't' and function arguments 'args'.
+    The first argument in 'args' is the function to be animated, the second argument is the x values for plotting,
+    and the third argument is the line object to be updated. The remaining arguments are passed to the function being animated.
+    """
+    func = args[0] # function to be animated
+    xvals = args[1] # x values for plotting
+    line = args[2] # line object to be updated
+    fargs = args[3:] # function arguments
+    y = func(t, *fargs)
+    line.set_data(xvals, y)
+    return line,

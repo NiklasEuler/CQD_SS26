@@ -63,8 +63,8 @@ def H_kinetic_sparse(x):
 
     main_diag = np.ones(n_points)
     off_diag = -0.5 * np.ones(n_points - 1)
-    H_kin = sparse.diags(
-        diagonals = [main_diag, off_diag, off_diag],
+    H_kin = sparse.diags_array(
+        [main_diag, off_diag, off_diag],
         offsets = [0, 1, -1],
     ) / (dx * dx)
     return H_kin
@@ -75,4 +75,4 @@ def HO_potential_sparse(x):
     The potential energy operator is represented as a diagonal matrix with elements given by V(x) = 0.5 * x^2.
     """
     
-    return sparse.diags(0.5 * x ** 2)
+    return sparse.diags_array(0.5 * x ** 2)

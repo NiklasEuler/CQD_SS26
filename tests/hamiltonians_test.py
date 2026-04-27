@@ -63,7 +63,7 @@ class Test_HO_sparse_eigenenergies:
 
     def test_HO_ED_evecs(self):
 
-        evecs_dense = LA.eig(self.H_mat.toarray())[1][:, :self.k]
+        evecs_dense = LA.eigh(self.H_mat.toarray())[1][:, :self.k]
         overlaps = np.zeros(self.k, dtype=complex)
         for i in range(self.k):
             overlap = np.vdot(self.evecs_num[:, i], evecs_dense[:, i])

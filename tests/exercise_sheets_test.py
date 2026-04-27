@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import tempfile
 
@@ -21,7 +22,7 @@ class Test_exercise_sheets:
                 check=True,
             )
             subprocess.run(
-                ["ipython", f"{temp_dir}/exercise1.py"],
+                [sys.executable, "-m", "IPython", f"{temp_dir}/exercise1.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1.ipynb runs without errors.
@@ -43,7 +44,7 @@ class Test_exercise_sheets:
                 check=True,
             )
             subprocess.run(
-                ["ipython", f"{temp_dir}/exercise1_sol.py"],
+                [sys.executable, "-m", "IPython", f"{temp_dir}/exercise1_sol.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise1_sol.ipynb runs without errors.
@@ -66,7 +67,7 @@ class Test_exercise_sheets:
                 check=True,
             )
             subprocess.run(
-                ["ipython", f"{temp_dir}/exercise2_sol.py"],
+                [sys.executable, "-m", "IPython", f"{temp_dir}/exercise2_sol.py"],
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
-            )  # Check that exercise2_sol.ipynb runs without errors."""
+            )  # Check that exercise2_sol.ipynb runs without errors.

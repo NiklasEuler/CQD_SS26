@@ -1,7 +1,7 @@
 import numpy as np   # standard numerics library
 import math
 from scipy.special import hermite as herm
-import scipy.sparse as sparse
+import scipy.sparse as sparse # routines for sparse matrices
 
 from Comp_Quant_Dynam.utility import state2idx, idx2state
 

@@ -69,3 +69,50 @@ class Test_HO_sparse_eigenenergies:
             overlap = np.vdot(self.evecs_num[:, i], evecs_dense[:, i])
             overlaps[i] = overlap
         assert np.allclose(np.abs(overlaps), 1) # check that the eigenvectors are approximately the same, up to a global phase
+
+
+#################### Solution sheet 3 ####################
+
+
+class Test_potentials:
+    L = 2
+    npoints = 21
+    xvals, dx = create_xvals(L, npoints)
+    
+    def test_step_potential(self):
+        V0 = 5
+        expected = np.zeros_like(self.xvals)
+        expected[self.xvals >= 0] = V0
+        result = ham.step_potential(self.xvals, V0)
+        assert np.allclose(expected, result)
+
+    def test_barrier_potential(self):
+        V0 = 5
+        width = 1
+        expected = np.zeros_like(self.xvals)
+        expected[np.abs(self.xvals) <= width / 2] = V0
+        result = ham.barrier_potential(self.xvals, V0, width)
+        assert np.allclose(expected, result)
+
+
+##################### Exercise sheet 4 ####################
+
+
+class Test_build_H_coupled_HO_man:
+    N1 = 10
+    N2 = 10
+
+    def test_build_H_coupled_HO_man_hermitian(self):
+        lam = 0.1
+        H = ham.build_H_coupled_HO_man(self.N1, self.N2, lam)
+        diff = H - H.conj().T
+        assert np.allclose(diff.nnz, 0) # check that the difference between H and its conjugate transpose is approximately zero, which means that H is Hermitian
+
+    def test_build_H_coupled_HO_man_non_interacting(self):
+        lam = 0
+        k = 10
+        H = ham.build_H_coupled_HO_man(self.N1, self.N2, lam)
+        evals, evecs = eigsh(H, k=k, which='SA')
+        evals_uncoupled = np.add.outer(ham.HO_eigenenergies_exact(np.arange(self.N1)), ham.HO_eigenenergies_exact(np.arange(self.N2))).flatten()
+        evals_uncoupled.sort()
+        assert np.allclose(evals, evals_uncoupled[:k]) # check that the eigen

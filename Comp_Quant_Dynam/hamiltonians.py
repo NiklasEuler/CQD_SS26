@@ -87,12 +87,16 @@ def step_potential(x, V0):
     Returns the potential energy of a step potential of step height 'V0' in the position basis for a grid 'x' as a diagonal matrix.
     The step potential is defined as V(x) = 0 for x < 0 and V(x) = V0 for x >= 0.
     """
-    potential = V0 * (1 + np.sign(x)) / 2
+    potential = V0 * (x >= 0).astype(float)
     return potential
 
 def barrier_potential(x, V0, width):
-    mask = np.heaviside(x + width/2, 1) - np.heaviside(x - width/2, 1)
-    return V0 * mask
+    """
+    Returns the potential energy of a barrier potential of height 'V0' and width 'width' in the position basis for a grid 'x' as a diagonal matrix.
+    The barrier potential is defined as V(x) = 0 for |x| > width/2 and V(x) = V0 for |x| <= width/2.
+    """
+    potential = V0 * ((x >= -width/2) & (x <= width/2)).astype(float)
+    return potential
 
 
 ##################### Exercise sheet 4 ####################

@@ -28,18 +28,24 @@ def create_xvals(L, npoints, endpoint=True):
 
 
 def FT(psi, x, k):
+    """
+    Computes the discrete Fourier transform of the wavefunction `psi` defined on the grid `x` to the momentum space grid `k`.
+    """
     npoints = len(x)
     assert len(k) == npoints, "Length of k must match length of x"
     return np.sum(psi * np.exp(-1j * np.outer(k, x)), axis=1)
 
 def iFT(phi, x, k):
+    """
+    Computes the inverse discrete Fourier transform of the momentum space wavefunction `phi` defined on the grid `k` to the position space grid `x`.
+    """
     npoints = len(x)
     assert len(k) == npoints, "Length of k must match length of x"
     return 1 / npoints * np.sum(phi * np.exp(1j * np.outer(x, k)), axis=1)
 
 def gaussian_wave_packet(x, x0, sigma, p0):
     """
-    Creates a Gaussian wave packet centered at position 'x0' with width 'sigma' and momentum 'p0'.
+    Creates a Gaussian wave packet centered at position `x0` with width `sigma` and momentum `p0`.
     """
     norm = 1 / np.sqrt(np.sqrt(2 * np.pi) * sigma)
     # p0 * x0 is a global phase factor that we can ignore, so we can omit it
@@ -48,7 +54,7 @@ def gaussian_wave_packet(x, x0, sigma, p0):
 
 def create_tvecs(tsteps, dt):
     """
-    Creates a time vector for 'tsteps' time steps with time step size 'dt'.
+    Creates a time vector for steps'' time steps with time step size 'dt'.
     Returns the time vector of length tsteps+1, starting from 0 to tsteps*dt.
     """
     return np.linspace(0, tsteps * dt, tsteps + 1) # will have length tsteps + 1
@@ -58,7 +64,7 @@ def create_tvecs(tsteps, dt):
 
 def idx2state(N1, N2, i):
     """
-    Converts a single index 'i' to a 'state' in the product Hilbert space |n1, n2> of dimension N1 x N2.
+    Converts a single index `i` to a 'state' in the product Hilbert space |n1, n2> of dimension N1 x N2.
     """
     assert i >= 0 and i < N1 * N2, "Index out of bounds"
     n1 = i // N2
@@ -68,7 +74,7 @@ def idx2state(N1, N2, i):
  
 def state2idx(N1, N2, state):
     """
-    Converts a 'state' |n1, n2> from the product Hilbert space of dimension N1 x N2 to a single index 'i'.
+    Converts a `state` |n1, n2> from the product Hilbert space of dimension `N1 x N2` to a single index `i`.
     """
     n1 = state[0]
     n2 = state[1]

@@ -47,3 +47,38 @@ class Test_t_evol_eigenbasis:
         assert np.isclose(np.abs(overlap), 1) # check that the evolved state is approximately the expected state in the computational basis, up to a global phase
 
     
+#################### Solution sheet 3 ####################
+
+
+
+class Test_t_evol_split_step_fourier:
+
+    L = 20
+    npoints = 501
+    xvals, dx = util.create_xvals(L, npoints)
+    
+
+    def test_t_evol_split_step_fourier_free_particle(self):
+        x0 = 0
+        sigma = 1
+        p0 = 1
+        tvec = util.create_tvecs(tsteps=100, dt=0.1)
+        psi0 = util.gaussian_wave_packet(self.xvals, x0=x0, sigma=sigma, p0=p0) # Gaussian wave packet with some momentum
+        V_func = lambda t: np.zeros_like(self.xvals) # free particle
+        psit = unit.t_evol_split_step_fourier(psi0, V_func, tvec, self.xvals)
+        # check that the norm is approximately conserved
+        norms = np.sum(np.abs(psit)**2, axis=1) * self.dx
+        assert np.allclose(norms, 1)
+
+    def test_t_evol_split_step_fourier_harmonic_oscillator(self):
+        x0 = -2
+        sigma = 1/np.sqrt(2)
+        p0 = 3
+        tvec_2pi = util.create_tvecs(tsteps=200, dt=np.pi/100) # choose time steps to be small compared to the period of the harmonic oscillator
+        psi0 = util.gaussian_wave_packet(self.xvals, x0=x0, sigma=sigma, p0=p0) #coherent state
+        V_func = lambda t: 0.5 * self.xvals**2 # harmonic oscillator potential
+        psit = unit.t_evol_split_step_fourier(psi0, V_func, tvec_2pi, self.xvals)
+        overlap = np.vdot(psi0, psit[-1]) * self.dx
+        assert np.isclose(np.abs(overlap), 1) # check that the state approximately returns to itself after one period of the harmonic oscillator, up to a global phase
+
+    

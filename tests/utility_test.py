@@ -124,3 +124,15 @@ class Test_idx2state_state2idx:
         assert idx == -1
         idx = util.state2idx(self.N1, self.N2, [0, self.N2]) # n2 out of bounds
         assert idx == -1
+
+    def test_idx2state_state2idx_specific_cases(self):
+        # test some specific cases for idx2state and state2idx
+        i = 0
+        state = util.idx2state(self.N1, self.N2, i)
+        assert state == [0, 0]
+        i = 5
+        state = util.idx2state(self.N1, self.N2, i)
+        assert state == [1, 1]
+        i = 11
+        state = util.idx2state(self.N1, self.N2, i)
+        assert state == [2, 3]

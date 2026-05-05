@@ -1,3 +1,4 @@
+from . import hamiltonians, plotting, unitaries, utility
 
 __all__ = [
     "utility",
@@ -5,8 +6,3 @@ __all__ = [
     "plotting",
     "unitaries"
 ]
-
-import Comp_Quant_Dynam.utility
-import Comp_Quant_Dynam.hamiltonians
-import Comp_Quant_Dynam.plotting
-import Comp_Quant_Dynam.unitaries

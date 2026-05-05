@@ -48,6 +48,7 @@ def plot_eigenstate(n, x, evals, evecs):
 
 #################### Solution sheet 2 ####################
 
+
 def animate(t, *args):
     """
     Animates the time evolution of a wavefunction for a given time 't' and function arguments 'args'.
@@ -61,3 +62,21 @@ def animate(t, *args):
     y = func(t, *fargs)
     line.set_data(xvals, y)
     return line,
+
+
+#################### Solution sheet 3 ####################
+
+
+def multi_animate(t, *args):
+    
+    n_lines = len(args)
+    lines = []
+    for i in range(n_lines):
+        func = args[i][0] # function to be animated
+        xvals = args[i][1] # x values for plotting
+        line = args[i][2] # line object to be updated
+        fargs = args[i][3:] # function arguments
+        y = func(t, *fargs)
+        line.set_data(xvals, y)
+        lines.append(line)
+    return lines

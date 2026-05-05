@@ -3,6 +3,7 @@ import math
 from scipy.special import hermite as herm
 import scipy.sparse as sparse # routines for sparse matrices
 
+from Comp_Quant_Dynam.utility import state2idx, idx2state
 
 #################### Solution sheet 1 ####################
 
@@ -76,3 +77,100 @@ def HO_potential_sparse(x):
     """
     
     return sparse.diags_array(0.5 * x ** 2)
+
+
+#################### Solution sheet 3 ####################
+
+
+def step_potential(x, V0):
+    """
+    Returns the potential energy of a step potential of step height 'V0' in the position basis for a grid 'x' as a diagonal matrix.
+    The step potential is defined as V(x) = 0 for x < 0 and V(x) = V0 for x >= 0.
+    """
+    potential = V0 * (1 + np.sign(x)) / 2
+    return potential
+
+def barrier_potential(x, V0, width):
+    mask = np.heaviside(x + width/2, 1) - np.heaviside(x - width/2, 1)
+    return V0 * mask
+
+
+##################### Exercise sheet 4 ####################
+
+
+def build_H_coupled_HO_man(N1, N2, lam):
+    """
+    Manually builds the Hamiltonian matrix for two coupled harmonic oscillators in the number basis, where `N1` and `N2` are the maximum occupation numbers for the two oscillators, and `lam` is the coupling strength.
+    The Hamiltonian is given by:
+    H = H_1 + H_2 + V = 1 / (2m) * (p_1^2 + p_2^2) + k / 2 * (x_1^2 + x_2^2) + lam / 2 * (x_1 - x_2)^2
+    This function is inteded for testing purposes, and better implemented using the ladder operators.
+    """
+    # build a vector of data-index pairs for the non-zero matrix elements
+    values = np.array([])
+    row = np.array([])
+    col = np.array([])
+    for i in range(N1*N2):
+        state = idx2state(N1,N2,i)
+        # diagonal term (k=m=hbar=1)
+        values = np.append(values,(1+lam/2)*(1+state[0]+state[1]))
+        row = np.append(row,i)
+        col = np.append(col,i)
+        # off-diagonal elements of a column (8 terms in the perturbing Hamiltonian)
+        # a1^dag a1^dag
+        stateCoupleTo = [state[0] + 2, state[1] + 0]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,(lam/4)*np.sqrt((state[0]+1)*(state[0]+2)))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a1 a1
+        stateCoupleTo = [state[0] - 2, state[1] + 0]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,(lam/4)*np.sqrt((state[0])*(state[0]-1)))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a2^dag a2^dag
+        stateCoupleTo = [state[0] + 0, state[1] + 2]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,(lam/4)*np.sqrt((state[1]+1)*(state[1]+2)))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a2 a2
+        stateCoupleTo = [state[0] + 0, state[1] - 2]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,(lam/4)*np.sqrt((state[1])*(state[1]-1)))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a1^dag a2^dag
+        stateCoupleTo = [state[0] + 1, state[1] + 1]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,-(lam/2)*np.sqrt((state[0]+1)*(state[1]+1)))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a1^dag a2
+        stateCoupleTo = [state[0] + 1, state[1] - 1]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,-(lam/2)*np.sqrt((state[0]+1)*(state[1])))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a1 a2^dag
+        stateCoupleTo = [state[0] - 1, state[1] + 1]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,-(lam/2)*np.sqrt((state[0])*(state[1]+1)))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+        # a1 a2
+        stateCoupleTo = [state[0] - 1, state[1] -1]
+        indTo = state2idx(N1,N2,stateCoupleTo)
+        if indTo >= 0:
+            values = np.append(values,-(lam/2)*np.sqrt((state[0])*(state[1])))
+            row = np.append(row,indTo)
+            col = np.append(col,i)
+
+    return sparse.coo_matrix((values, (row, col)), shape=(N1*N2, N1*N2))

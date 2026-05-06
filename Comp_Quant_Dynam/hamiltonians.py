@@ -176,5 +176,6 @@ def build_H_coupled_HO_man(N1, N2, lam):
             values = np.append(values,-(lam/2)*np.sqrt((state[0])*(state[1])))
             row = np.append(row,indTo)
             col = np.append(col,i)
-
-    return sparse.coo_matrix((values, (row, col)), shape=(N1*N2, N1*N2))
+    H = sparse.coo_matrix((values, (row, col)), shape=(N1*N2, N1*N2))
+    H.eliminate_zeros() # remove explicit zeros from the sparse matrix representation, which can arise from the way we build the matrix and can cause issues with the eigensolver
+    return H

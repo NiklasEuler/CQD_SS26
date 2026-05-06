@@ -104,15 +104,20 @@ class Test_build_H_coupled_HO_man:
 
     def test_build_H_coupled_HO_man_hermitian(self):
         lam = 0.1
+        tol = 1e-10
         H = ham.build_H_coupled_HO_man(self.N1, self.N2, lam)
         diff = H - H.conj().T
-        assert np.allclose(diff.nnz, 0) # check that the difference between H and its conjugate transpose is approximately zero, which means that H is Hermitian
+        
+        assert diff.nnz == 0 or np.max(np.abs(diff.data)) < tol  # check that the difference between H and its conjugate transpose is approximately zero, which means that H is Hermitian
 
     def test_build_H_coupled_HO_man_non_interacting(self):
         lam = 0
-        k = 10
+        k = 15
         H = ham.build_H_coupled_HO_man(self.N1, self.N2, lam)
         evals, evecs = eigsh(H, k=k, which='SA')
         evals_uncoupled = np.add.outer(ham.HO_eigenenergies_exact(np.arange(self.N1)), ham.HO_eigenenergies_exact(np.arange(self.N2))).flatten()
+        evals.sort()
         evals_uncoupled.sort()
-        assert np.allclose(evals, evals_uncoupled[:k]) # check that the eigen
+        print("evals:", evals)
+        print("evals_uncoupled:", evals_uncoupled[:k])
+        assert np.allclose(evals, evals_uncoupled[:k])

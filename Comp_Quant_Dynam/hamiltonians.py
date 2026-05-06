@@ -84,7 +84,7 @@ def HO_potential_sparse(x):
 
 def step_potential(x, V0):
     """
-    Returns the potential energy of a step potential of step height 'V0' in the position basis for a grid 'x' as a diagonal matrix.
+    Returns the potential energy of a step potential of step height 'V0' in the position basis for a grid 'x' as a 1D array.
     The step potential is defined as V(x) = 0 for x < 0 and V(x) = V0 for x >= 0.
     """
     potential = V0 * (x >= 0).astype(float)
@@ -92,7 +92,7 @@ def step_potential(x, V0):
 
 def barrier_potential(x, V0, width):
     """
-    Returns the potential energy of a barrier potential of height 'V0' and width 'width' in the position basis for a grid 'x' as a diagonal matrix.
+    Returns the potential energy of a barrier potential of height 'V0' and width 'width' in the position basis for a grid 'x' as a 1D array.
     The barrier potential is defined as V(x) = 0 for |x| > width/2 and V(x) = V0 for |x| <= width/2.
     """
     potential = V0 * ((x >= -width/2) & (x <= width/2)).astype(float)

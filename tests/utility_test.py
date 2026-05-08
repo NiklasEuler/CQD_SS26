@@ -1,5 +1,6 @@
 import numpy as np
 import Comp_Quant_Dynam.utility as util
+import Comp_Quant_Dynam.operators as ops
 
 
 class Test_example_function:
@@ -136,3 +137,33 @@ class Test_idx2state_state2idx:
         i = 11
         state = util.idx2state(self.N1, self.N2, i)
         assert state == [2, 3]
+
+
+##################### Solution sheet 4 ####################
+
+
+class Test_create_coherent_state:
+
+    N = 100
+
+    def test_create_coherent_state_normalization(self):
+        alpha = 1 + 1j
+        state = util.create_coherent_state(self.N, alpha)
+        norm = np.sum(np.abs(state)**2)
+        print(f"Norm of the coherent state: {norm}")
+        assert np.isclose(norm, 1)
+
+    def test_create_coherent_state_alpha_zero(self):
+        alpha = 0
+        state = util.create_coherent_state(self.N, alpha)
+        expected = np.zeros(self.N)
+        expected[0] = 1
+        assert np.allclose(state, expected)
+
+    def test_adag_operator_sparse_consistency(self):
+        alpha = 1
+        a_op = ops.a_operator_sparse(self.N).toarray()
+        init_state = util.create_coherent_state(self.N, alpha)
+        applied_a_op = a_op @ init_state
+        applied_a_op /= alpha # should be equal to the original state
+        assert np.allclose(applied_a_op, init_state)

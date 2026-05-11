@@ -150,7 +150,6 @@ class Test_create_coherent_state:
         alpha = 1 + 1j
         state = util.create_coherent_state(self.N, alpha)
         norm = np.sum(np.abs(state)**2)
-        print(f"Norm of the coherent state: {norm}")
         assert np.isclose(norm, 1)
 
     def test_create_coherent_state_alpha_zero(self):

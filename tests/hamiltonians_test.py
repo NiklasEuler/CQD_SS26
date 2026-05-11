@@ -121,8 +121,6 @@ class Test_build_H_coupled_HO_man:
         evals, evecs = eigsh(H, k=k+2, which='SA') # compute the lowest k+2 eigenvalues and eigenvectors of H using the sparse eigensolver
         evals_uncoupled = np.add.outer(ham.HO_eigenenergies_exact(np.arange(self.N1)), ham.HO_eigenenergies_exact(np.arange(self.N2))).flatten()
         evals_uncoupled.sort()
-        print("evals:", evals)
-        print("evals_uncoupled:", evals_uncoupled[:k])
         assert np.allclose(evals[:k], evals_uncoupled[:k])
 
     def test_build_H_coupled_HO_man_lam_effect(self):
@@ -131,7 +129,6 @@ class Test_build_H_coupled_HO_man:
         dim = self.N1 * self.N2
         H = ham.build_H_coupled_HO_man(self.N1, self.N2, lam)
         evals, evecs = eigsh(H, k=k+2, which='SA')
-        print("evals with coupling:", evals)
         evals_coupled = [ham.coupled_HO_eigenenergies_exact(n_cm, n_rel, lam) for n_cm in range(dim) for n_rel in range(dim)]
         evals_coupled.sort()
         assert np.allclose(evals[:k], evals_coupled[:k], atol=1e-3)
@@ -279,4 +276,3 @@ class Test_coupled_HO_potential:
     def test_coupled_HO_potential_diagonal(self):
         expected_no_coupling = 1/2 * self.X**2 + 1/2 * self.Y**2
         assert np.allclose(self.H_pot.diagonal(), expected_no_coupling.diagonal()) # the coupling term should not contribute to the diagonal elements of the potential
-

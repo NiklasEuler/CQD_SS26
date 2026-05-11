@@ -104,4 +104,4 @@ def expectation_value(state, operator):
     Computes the expectation value of an `operator` in a given `state`.
     """
 
-    return np.vdot(state, operator @ state).real
+    return np.vdot(state, operator @ state)

@@ -181,7 +181,7 @@ class Test_expectation_value:
         exp_val = util.expectation_value(state, x_op)
         assert np.isclose(exp_val.imag, 0)
 
-    def test_expection_value_known(self):
+    def test_expectation_value_known(self):
         # test the expectation value of the number operator in a coherent state, which should be |alpha|^2
         alpha = 2.0 + 1j
         state = util.create_coherent_state(self.N, alpha)

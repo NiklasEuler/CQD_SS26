@@ -227,7 +227,7 @@ class Test_class_traj:
         alpha = 0.1
         state_1 = util.create_coherent_state(self.N1, alpha)
         state_2 = np.eye(1, self.N2, 4).flatten() # ground state of the second oscillator
-        state = np.kron(state_1, state_2) # initial state is the product of the coherent state and the ground state
+        state = np.kron(state_1, state_2) # initial state is the product of the coherent state and the n=4 state.
         x10 = util.expectation_value(state, self.x1_op)
         x20 = util.expectation_value(state, self.x2_op)
         p10 = util.expectation_value(state, self.p1_op)
@@ -249,9 +249,9 @@ class Test_class_traj:
         eigen_coeffs = unitaries.init_coeffs_eigenbasis(state, evecs) 
         for i, t in enumerate(tvec):
             state_t = unitaries.t_evol_eigenbasis(eigen_coeffs, t, evals, evecs)
-            x1_num[i] = util.expectation_value(state_t, self.x1_op)
-            x2_num[i] = util.expectation_value(state_t, self.x2_op)
-
+            x1_num[i] = util.expectation_value(state_t, self.x1_op).real
+            x2_num[i] = util.expectation_value(state_t, self.x2_op).real
+            
         assert np.allclose(x1_class, x1_num, atol=1e-8)
         assert np.allclose(x2_class, x2_num, atol=1e-8)
 

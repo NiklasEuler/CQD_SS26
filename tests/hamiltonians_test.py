@@ -118,7 +118,7 @@ class Test_build_H_coupled_HO_man:
         k = 15
         H = ham.build_H_coupled_HO_man(self.N1, self.N2, lam)
         assert H.nnz == self.N1 * self.N2  # check that the number of non-zero elements in H is equal to N1*N2
-        evals, evecs = eigsh(H, k=k+2, which='SA') # compute the lowest k+2 eigenvalues and eigenvectors of H using the sparse eigensolver
+        evals, evecs = eigsh(H, k=k+2, which='SA', ncv = 5 * k) # compute the lowest k+2 eigenvalues and eigenvectors of H using the sparse eigensolver
         evals_uncoupled = np.add.outer(ham.HO_eigenenergies_exact(np.arange(self.N1)), ham.HO_eigenenergies_exact(np.arange(self.N2))).flatten()
         evals_uncoupled.sort()
         assert np.allclose(evals[:k], evals_uncoupled[:k])

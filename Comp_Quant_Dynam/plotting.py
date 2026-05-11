@@ -87,6 +87,11 @@ def multi_animate(t, *args):
 
 
 def plot_prob_amplitude_2D(t, wfcts, tvec, L):
+    """
+    Plots the probability amplitude of a 2D wavefunction `wfcts` at time `t` for a given time vector `tvec` and spatial extent `L`.
+    The wavefunction is expected to be defined on a grid of size (len(tvec), npoints, npoints), where `npoints` is the number of spatial grid points in each dimension.
+    """
+    
     fig = plt.figure()
     ax = fig.add_subplot()
     ax.imshow(np.abs(wfcts[t]) ** 2, extent=(-L/2, L/2, -L/2, L/2), interpolation='none', origin='lower')

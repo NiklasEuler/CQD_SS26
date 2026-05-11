@@ -160,14 +160,14 @@ class Test_create_coherent_state:
         expected[0] = 1
         assert np.allclose(state, expected)
 
-    def test_adag_operator_sparse_consistency(self):
+    def test_a_operator_sparse_consistency(self):
         alpha = 3
         a_op = ops.a_operator_sparse(self.N).toarray()
         init_state = util.create_coherent_state(self.N, alpha)
         applied_a_op = a_op @ init_state
         applied_a_op /= alpha # should be equal to the original state
         assert np.allclose(1, np.vdot(applied_a_op[:-1], init_state[:-1]), atol=1e-10)
-        # check that the state is approximately the same, up to a global phase. Ignore the last element which should be zero due to the truncation of the Hilbert space.
+        # check the coherent-state eigenvalue relation for the annihilation operator, up to truncation effects in the last basis element.
 
 class Test_expectation_value:
 

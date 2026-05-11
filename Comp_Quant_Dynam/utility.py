@@ -1,5 +1,6 @@
 import numpy as np   # standard numerics library
 import math
+from scipy.special import factorial
 
 def example_func(x):
     """
@@ -85,3 +86,22 @@ def state2idx(N1, N2, state):
     return i
     
 
+##################### Solution sheet 4 ###################
+
+def create_coherent_state(N, alpha):
+    """
+    Creates a coherent state |alpha> in the Fock basis of dimension `N` with complex amplitude `alpha`.
+    The coherent state is defined as:
+    |alpha> = exp(-|alpha|^2/2) sum_{n=0}^{N-1} (alpha^n / sqrt(n!)) |n>
+    """
+
+    nvec = np.arange(N)
+    state = np.exp(-np.abs(alpha) ** 2 / 2) * np.power(alpha, nvec) / np.sqrt(factorial(nvec))
+    return state
+
+def expectation_value(state, operator):
+    """
+    Computes the expectation value of an `operator` in a given `state`.
+    """
+
+    return np.vdot(state, operator @ state)

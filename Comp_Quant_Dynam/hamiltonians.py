@@ -189,7 +189,7 @@ def coupled_HO_potential(x, y, lam):
     """
     Returns the potential energy of two coupled harmonic oscillators in the position basis for a grid `x` and `y` as a 2D array, where `lam` is the coupling strength.
     The potential energy is given by:
-    V(x, y) = (x^2 + y^2) + lam / 2 * (x - y)^2
+    V(x, y) = (x^2 + y^2) / 2 + lam / 2 * (x - y)^2
     """
     
     potential = (x ** 2 + y ** 2) / 2 + lam / 2 * (x - y) ** 2

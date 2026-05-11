@@ -114,5 +114,5 @@ class Test_exercise_sheets:
             subprocess.run(
                 [sys.executable, "-m", "IPython", f"{temp_dir}/exercise4_sol.py"],
                 check=True,
-                env={**os.environ, "MPLBACKEND": "Agg"},
+                env={**os.environ, "MPLBACKEND": "Agg", "PYTHONIOENCODING": "utf-8"},
             )  # Check that exercise4_sol.ipynb runs without errors.

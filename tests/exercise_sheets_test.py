@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 import tempfile
-"""
+
 class Test_exercise_sheets:
 
     def test_exercise_sheet_1(self):
@@ -116,4 +116,3 @@ class Test_exercise_sheets:
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg"},
             )  # Check that exercise4_sol.ipynb runs without errors.
-            """

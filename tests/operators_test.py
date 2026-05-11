@@ -33,7 +33,7 @@ class Test_ladder_operators:
         identity = 1j * sparse.eye(self.N)
         diff = commutator - identity
         diff_dense = diff.toarray()
-        assert np.allclose(diff_dense[:-1, :-1], 0) # the last row and column devite due to the truncation of the operators.
+        assert np.allclose(diff_dense[:-1, :-1], 0) # the last row and column deviate due to the truncation of the operators.
 
     def test_a_adag_hermiticity(self):
         assert np.allclose(self.a_op.data, self.adag_op.conj().T.data)

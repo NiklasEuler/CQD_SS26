@@ -49,6 +49,16 @@ def adag_operator_sparse(N):
     adag_op = a_op.transpose().conjugate() # the creation operator is the Hermitian conjugate of the annihilation operator
     return adag_op
 
+def n_operator_sparse(N):
+    """
+    Returns the number operator for a system with a local dimension `N` as a sparse matrix.
+    The number operator is defined as:
+    n |n> = n |n>
+    """
+    n_vals = np.arange(N, dtype=float) # eigenvalues of the number operator
+    n_op = diagonal_op_sparse(n_vals) # create a sparse diagonal matrix with the eigenvalues on the diagonal
+    return n_op
+
 def x_operator_sparse(N):
     """
     Returns the position operator for a system with a local dimension `N` as a sparse matrix.

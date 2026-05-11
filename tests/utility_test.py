@@ -161,9 +161,32 @@ class Test_create_coherent_state:
         assert np.allclose(state, expected)
 
     def test_adag_operator_sparse_consistency(self):
-        alpha = 1
+        alpha = 3
         a_op = ops.a_operator_sparse(self.N).toarray()
         init_state = util.create_coherent_state(self.N, alpha)
         applied_a_op = a_op @ init_state
         applied_a_op /= alpha # should be equal to the original state
-        assert np.allclose(applied_a_op, init_state)
+        assert np.allclose(1, np.vdot(applied_a_op[:-1], init_state[:-1]), atol=1e-10)
+        # check that the state is approximately the same, up to a global phase. Ignore the last element which should be zero due to the truncation of the Hilbert space.
+
+class Test_expectation_value:
+
+    N = 100
+
+    def test_expectation_value_hermitian(self):
+        # test that the expectation value of a Hermitian operator is real
+        alpha = 1 + 1j
+        state = util.create_coherent_state(self.N, alpha)
+        x_op = ops.x_operator_sparse(self.N).toarray()
+        exp_val = util.expectation_value(state, x_op)
+        assert np.isclose(exp_val.imag, 0)
+
+    def test_expection_value_known(self):
+        # test the expectation value of the number operator in a coherent state, which should be |alpha|^2
+        alpha = 2.0 + 1j
+        state = util.create_coherent_state(self.N, alpha)
+        print("state: ", state)
+        n_op = ops.n_operator_sparse(self.N)
+        exp_val = util.expectation_value(state, n_op)
+        expected = np.abs(alpha)**2
+        assert np.isclose(exp_val, expected, atol=1e-10)

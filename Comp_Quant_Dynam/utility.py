@@ -98,3 +98,10 @@ def create_coherent_state(N, alpha):
     nvec = np.arange(N)
     state = np.exp(-np.abs(alpha) ** 2 / 2) * np.power(alpha, nvec) / np.sqrt(factorial(nvec))
     return state
+
+def expectation_value(state, operator):
+    """
+    Computes the expectation value of an `operator` in a given `state`.
+    """
+
+    return np.vdot(state, operator @ state).real

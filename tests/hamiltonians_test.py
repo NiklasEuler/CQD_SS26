@@ -356,4 +356,12 @@ class Test_build_H_TFIM_symm:
         probs_expected[-1] /= 2 # the last term should be divided by 2 to account for the fact that the state with N/2 excitations has only one configuration instead of two
         assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states
 
-    
+    def test_build_H_TFIM_symm_GS_strong_field_odd(self):
+        N_odd = 9
+        ome = 1e10
+        H_symm = ham.build_H_TFIM_symm(N_odd, ome)
+        evals, evecs = eigsh(H_symm, k=1, which='SA') # compute the lowest k eigenvalues and eigenvectors of H using the sparse eigensolver
+        GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
+        probs_GS = np.abs(GS) ** 2
+        probs_expected = np.array([comb(N_odd, k) * 2 / 2 ** N_odd for k in range((N_odd // 2) + 1)])
+        assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states

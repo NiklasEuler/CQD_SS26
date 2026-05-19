@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 
-"""class Test_exercise_sheets:
+class Test_exercise_sheets:
 
     def test_exercise_sheet_1(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -162,4 +162,3 @@ import tempfile
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg", "PYTHONIOENCODING": "utf-8"},
             )  # Check that exercise6.ipynb runs without errors.
-            """

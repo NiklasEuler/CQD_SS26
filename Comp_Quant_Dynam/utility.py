@@ -1,5 +1,5 @@
 import numpy as np   # standard numerics library
-import math
+from collections.abc import Iterable
 from scipy.special import factorial
 
 def example_func(x):
@@ -102,6 +102,10 @@ def create_coherent_state(N, alpha):
 def expectation_value(state, operator):
     """
     Computes the expectation value of an `operator` in a given `state`.
+    The `operator` argument can be either a single operator or an iterable of operators.
+    If it is an iterable, the function returns a vector of expectation values for each operator.
     """
+    if isinstance(operator, Iterable) and not isinstance(operator, (str, bytes)) and getattr(operator, "ndim", None) != 2:
+        return np.array([expectation_value(state, op) for op in operator])
 
     return np.vdot(state, operator @ state)

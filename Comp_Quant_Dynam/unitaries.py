@@ -1,4 +1,10 @@
 import numpy as np   # standard numerics library
+import numpy.linalg as LA
+import time
+import warnings
+
+import Comp_Quant_Dynam.operators as ops
+from Comp_Quant_Dynam.utility import expectation_value
 
 
 #################### Solution sheet 2 ####################
@@ -60,3 +66,33 @@ def t_evol_split_step_fourier(psi0, V_func, tvec, xvals):
         psit[i + 1] = psit[i + 1, :]
 
     return psit
+
+#################### Exercise sheet 6 ####################
+
+
+def calc_expv_ED(obsv_vec, H_mat, ini, tvec):
+    """
+    Returns the expectation values of the observables in `obsv_vec` at the times given by `tvec` for a system with Hamiltonian `H_mat`
+    and initial state `ini` using exact diagonalization.
+    """
+
+    n_obsv = len(obsv_vec)
+    
+    observables = np.zeros((n_obsv, len(tvec)), dtype=float) # container for results
+
+    # ED solution
+    t1=time.time()
+    evals, evecs = LA.eigh(H_mat.toarray()) # diagonalize
+    # calculate projections on eigenstates
+    iniProj = init_coeffs_eigenbasis(ini, evecs) 
+    for t_idx, t in enumerate(tvec):
+        Psit = t_evol_eigenbasis(iniProj, t, evals, evecs)
+        exp_vals = expectation_value(Psit, obsv_vec)
+        if not np.allclose(np.imag(exp_vals), 0.0):
+            warnings.warn("Some observables have non-zero imaginary parts")
+        observables[:, t_idx] = np.real(exp_vals)
+    t2=time.time()
+    
+    print('time for ED was '+str(t2 - t1))
+
+    return observables

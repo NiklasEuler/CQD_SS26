@@ -7,6 +7,9 @@ import Comp_Quant_Dynam.unitaries as unitaries
 import Comp_Quant_Dynam.operators as ops
 
 
+##################### Solution sheet 4 ####################
+
+
 class Test_ladder_operators:
 
     N = 20
@@ -79,3 +82,28 @@ class Test_n_proj_operator_sparse:
         state_2_0_proj_b = self.n_proj_b_3 @ self.state_2_0
         assert np.allclose(state_2_0_proj_a, self.state_2_0)
         assert np.allclose(state_2_0_proj_b, 0)
+
+
+##################### Solution sheet 5 ####################
+
+
+class Test_Sx_Sz_sparse:
+    
+    N = 5
+
+    Sx_op = ops.Sx_sparse(N)
+    Sz_op = ops.Sz_sparse(N)
+
+    def test_Sx_hermiticity(self):
+        diff = self.Sx_op - self.Sx_op.T.conj()
+        assert np.allclose(diff.data, 0)
+
+    def test_Sz_hermiticity(self):
+        diff = self.Sz_op - self.Sz_op.T.conj()
+        assert np.allclose(diff.data, 0)
+
+    def test_Sx_trace(self):
+        assert np.isclose(self.Sx_op.trace(), 0)
+
+    def test_Sz_trace(self):
+        assert np.isclose(self.Sz_op.trace(), 0)

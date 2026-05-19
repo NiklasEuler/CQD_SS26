@@ -94,3 +94,63 @@ def n_proj_operator_sparse(local_dims, idx, n):
     proj_op = diagonal_op_sparse(proj_arr.flatten()) # create a sparse diagonal matrix with the non-zero element on the diagonal corresponding to the n-th state
     projector_full = n_party_op_sparse(local_dims, idx, proj_op) # create the full projector operator for the n-th state of the idx-th party
     return projector_full
+
+
+##################### Solution sheet 5 ####################
+
+
+def Sx_sparse(N):
+    """
+    Returns the Sx operator for a system of `N` spin-1/2 particles as a sparse matrix.
+    The Sx operator is defined as:
+    Sx = (S+ + S-) / 2
+    where S+ and S- are the raising and lowering operators, respectively.
+    """
+    
+    S_plus_vec = np.sqrt((N - np.arange(0, N)) * (np.arange(0, N) + 1)) 
+    S_plus = sparse.diags_array(S_plus_vec, offsets=-1)
+    return (S_plus + S_plus.T) / 2
+
+def Sz_sparse(N):
+    """
+    Returns the Sz operator for a system of `N` spin-1/2 particles as a sparse matrix.
+    The Sz operator is defined as:
+    Sz |m> = m |m>
+    where m is the magnetic quantum number corresponding to the state |m>.
+    """
+    
+    Sz_vec = np.arange(N + 1) - N / 2 # from -N/2 to N/2 in steps of 1 
+    return sparse.diags_array(Sz_vec)
+
+def Sx_symm(N):
+    """
+    Returns the Sx operator for a system of `N` spin-1/2 particles in the positive symmetric subspace as a sparse matrix.
+    The Sx operator is defined as:
+    Sx = (S+ + S-) / 2
+    where S+ and S- are the raising and lowering operators, respectively.
+    """
+
+    S = N / 2
+    L = int(np.floor(S))
+
+    m_vals = np.arange(0, L, dtype=float)
+    S_plus_vec = np.sqrt((N - m_vals) * (m_vals + 1))
+    if (S % 1) == 0:
+        S_plus_vec[-1] *= np.sqrt(2)
+    S_plus = sparse.diags_array(S_plus_vec, offsets=-1)
+    return (S_plus + S_plus.T) / 2
+
+def Sz2_symm(N):
+    """
+    Returns the Sz^2 operator for a system of `N` spin-1/2 particles in the positive symmetric subspace as a sparse matrix.
+    The Sz^2 operator is defined as:
+    Sz^2 |m> = m^2 |m>
+    where m is the magnetic quantum number corresponding to the state |m>.
+    Note that Sz vanishes in the positive symmetric subspace.
+    """
+
+    #return sparse.diags_array((np.arange(N / 2 + 1) - N / 2) ** 2)
+    S = N / 2
+    L = int(np.floor(S)) + 1
+    m_vals = np.arange(0, L, dtype=float) - S
+    return sparse.diags_array(m_vals ** 2)

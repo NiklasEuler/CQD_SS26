@@ -4,7 +4,7 @@ from scipy.special import hermite as herm
 import scipy.sparse as sparse # routines for sparse matrices
 
 from Comp_Quant_Dynam.utility import state2idx, idx2state
-from Comp_Quant_Dynam.operators import diagonal_op_sparse, n_party_op_sparse, x_operator_sparse
+from Comp_Quant_Dynam.operators import diagonal_op_sparse, n_party_op_sparse, x_operator_sparse, Sx_sparse, Sz_sparse, Sx_symm, Sz2_symm
 
 #################### Solution sheet 1 ####################
 
@@ -273,3 +273,36 @@ def HO_product_eigenstates(N1, N2, xgrid):
         state_2 = HO_eigenstates_exact(state_ij[1], xgrid).reshape(1,len(xgrid))
         basis_state_pos[k] = np.kron(state_1, state_2)
     return basis_state_pos
+
+
+##################### Solution sheet 5 ####################
+
+
+def build_H_TFIM(N, ome):
+    """
+    Builds the Hamiltonian matrix for the transverse field Ising model (TFIM) for `N` spin-1/2 particles and transverse field strength `ome` as a sparse matrix.
+    The Hamiltonian is given by:
+    H = -1/N * Sz^2 - ome * Sx
+    where Sx and Sz are the collective spin operators in the x and z directions, respectively.
+    """
+    
+    Sx = Sx_sparse(N)
+    Sz = Sz_sparse(N)
+    H = -Sz @ Sz / N - ome * Sx
+    return H
+
+def build_H_TFIM_symm(N, ome):
+    """
+    Builds the Hamiltonian matrix for the transverse field Ising model (TFIM) for `N` spin-1/2 particles in the positive symmetric subspace and transverse field strength `ome` as a sparse matrix.
+    The Hamiltonian is given by:
+    H = -1/N * Sz^2 - ome * Sx
+    where Sx and Sz are the collective spin operators in the x and z directions, respectively.
+    """
+    
+    Sx = Sx_symm(N)
+    Sz2 = Sz2_symm(N)
+    print("Shape of Sx: ", Sx.shape)
+    print("Shape of Sz2: ", Sz2.shape)
+    H_symm = -Sz2 / N - ome * Sx
+    return H_symm
+    

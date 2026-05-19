@@ -131,14 +131,27 @@ def Sx_symm(N):
     """
 
     S = N / 2
-    L = int(np.floor(S))
+    full_dim = N + 1
 
-    m_vals = np.arange(0, L, dtype=float)
-    S_plus_vec = np.sqrt((N - m_vals) * (m_vals + 1))
-    if (S % 1) == 0:
-        S_plus_vec[-1] *= np.sqrt(2)
-    S_plus = sparse.diags_array(S_plus_vec, offsets=-1)
-    return (S_plus + S_plus.T) / 2
+    # build transformation matrix from full Dicke basis |S,m> (m = -S..S)
+    # to the positive-parity symmetric basis consisting of symmetric combinations
+    # (|m> + |-m>)/sqrt(2) and, if present, the |m=0> state.
+    L = int(np.floor(S)) + 1
+    T = np.zeros((full_dim, L), dtype=float)
+    for k in range(L):
+        m = S - k
+        i_pos = int(m + S)
+        i_neg = int(-m + S)
+        if abs(m) < 1e-12:
+            T[i_pos, k] = 1.0
+        else:
+            T[i_pos, k] = 1.0 / np.sqrt(2.0)
+            T[i_neg, k] = 1.0 / np.sqrt(2.0)
+
+    Sx_full = Sx_sparse(N)
+    Sx_full_arr = Sx_full.toarray() if hasattr(Sx_full, "toarray") else np.array(Sx_full)
+    Sx_reduced = T.T @ (Sx_full_arr @ T)
+    return sparse.csr_matrix(Sx_reduced)
 
 def Sz2_symm(N):
     """
@@ -149,8 +162,23 @@ def Sz2_symm(N):
     Note that Sz vanishes in the positive symmetric subspace.
     """
 
-    #return sparse.diags_array((np.arange(N / 2 + 1) - N / 2) ** 2)
     S = N / 2
+    full_dim = N + 1
     L = int(np.floor(S)) + 1
-    m_vals = np.arange(0, L, dtype=float) - S
-    return sparse.diags_array(m_vals ** 2)
+
+    # construct same transformation matrix as in Sx_symm
+    T = np.zeros((full_dim, L), dtype=float)
+    for k in range(L):
+        m = S - k
+        i_pos = int(m + S)
+        i_neg = int(-m + S)
+        if abs(m) < 1e-12:
+            T[i_pos, k] = 1.0
+        else:
+            T[i_pos, k] = 1.0 / np.sqrt(2.0)
+            T[i_neg, k] = 1.0 / np.sqrt(2.0)
+
+    Sz_full = Sz_sparse(N)
+    Sz_full_arr = Sz_full.toarray() if hasattr(Sz_full, "toarray") else np.array(Sz_full)
+    Sz2_reduced = T.T @ ((Sz_full_arr @ Sz_full_arr) @ T)
+    return sparse.csr_matrix(Sz2_reduced)

@@ -122,20 +122,14 @@ def Sz_sparse(N):
     Sz_vec = np.arange(N + 1) - N / 2 # from -N/2 to N/2 in steps of 1 
     return sparse.diags_array(Sz_vec)
 
-def Sx_symm(N):
+def _T_positive_parity_symm(N):
     """
-    Returns the Sx operator for a system of `N` spin-1/2 particles in the positive symmetric subspace as a sparse matrix.
-    The Sx operator is defined as:
-    Sx = (S+ + S-) / 2
-    where S+ and S- are the raising and lowering operators, respectively.
+    Returns the basis-change matrix from the full Dicke basis to the
+    positive-parity symmetric subspace basis.
     """
 
     S = N / 2
     full_dim = N + 1
-
-    # build transformation matrix from full Dicke basis |S,m> (m = -S..S)
-    # to the positive-parity symmetric basis consisting of symmetric combinations
-    # (|m> + |-m>)/sqrt(2) and, if present, the |m=0> state.
     L = int(np.floor(S)) + 1
     T = np.zeros((full_dim, L), dtype=float)
     for k in range(L):
@@ -147,6 +141,17 @@ def Sx_symm(N):
         else:
             T[i_pos, k] = 1.0 / np.sqrt(2.0)
             T[i_neg, k] = 1.0 / np.sqrt(2.0)
+    return T
+
+def Sx_symm(N):
+    """
+    Returns the Sx operator for a system of `N` spin-1/2 particles in the positive symmetric subspace as a sparse matrix.
+    The Sx operator is defined as:
+    Sx = (S+ + S-) / 2
+    where S+ and S- are the raising and lowering operators, respectively.
+    """
+
+    T = _T_positive_parity_symm(N)
 
     Sx_full = Sx_sparse(N)
     Sx_full_arr = Sx_full.toarray() if hasattr(Sx_full, "toarray") else np.array(Sx_full)
@@ -162,21 +167,7 @@ def Sz2_symm(N):
     Note that Sz vanishes in the positive symmetric subspace.
     """
 
-    S = N / 2
-    full_dim = N + 1
-    L = int(np.floor(S)) + 1
-
-    # construct same transformation matrix as in Sx_symm
-    T = np.zeros((full_dim, L), dtype=float)
-    for k in range(L):
-        m = S - k
-        i_pos = int(m + S)
-        i_neg = int(-m + S)
-        if abs(m) < 1e-12:
-            T[i_pos, k] = 1.0
-        else:
-            T[i_pos, k] = 1.0 / np.sqrt(2.0)
-            T[i_neg, k] = 1.0 / np.sqrt(2.0)
+    T = _T_positive_parity_symm(N)
 
     Sz_full = Sz_sparse(N)
     Sz_full_arr = Sz_full.toarray() if hasattr(Sz_full, "toarray") else np.array(Sz_full)

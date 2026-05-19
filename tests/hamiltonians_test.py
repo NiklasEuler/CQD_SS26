@@ -346,15 +346,14 @@ class Test_build_H_TFIM_symm:
         GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
         assert np.isclose(GS[0] ** 2, 1) # check that the ground state is approximately equal to the expected ground state, up to a global phase
 
-    #def test_build_H_TFIM_symm_GS_strong_field_odd(self):
-    #    N = 40
-    #    ome = 1e10
-    #    H_symm = ham.build_H_TFIM_symm(N, ome)
-    #    evals, evecs = eigsh(H_symm, k=1, which='SA') # compute the lowest k eigenvalues and eigenvectors of H using the sparse eigensolver
-    #    GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
-    #    probs_GS = np.abs(GS) ** 2
-    #   probs_expected = np.array([comb(N, k) * 2 / 2**N for k in range(N // 2 + 1)])
-    #    probs_expected /= sum(probs_expected) # normalize the probabilities to ensure that they sum to 1
-    #    print("probs_GS:", probs_GS)
-    #    print("probs_expected:", probs_expected)
-    #    assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states
+    def test_build_H_TFIM_symm_GS_strong_field_even(self):
+        ome = 1e10
+        H_symm = ham.build_H_TFIM_symm(self.N, ome)
+        evals, evecs = eigsh(H_symm, k=1, which='SA') # compute the lowest k eigenvalues and eigenvectors of H using the sparse eigensolver
+        GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
+        probs_GS = np.abs(GS) ** 2
+        probs_expected = np.array([comb(self.N, k) * 2 / 2 ** self.N for k in range(self.N // 2 + 1)])
+        probs_expected[-1] /= 2 # the last term should be divided by 2 to account for the fact that the state with N/2 excitations has only one configuration instead of two
+        assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states
+
+    

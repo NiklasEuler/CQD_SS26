@@ -301,8 +301,6 @@ def build_H_TFIM_symm(N, ome):
     
     Sx = Sx_symm(N)
     Sz2 = Sz2_symm(N)
-    print("Shape of Sx: ", Sx.shape)
-    print("Shape of Sz2: ", Sz2.shape)
     H_symm = -Sz2 / N - ome * Sx
     return H_symm
     

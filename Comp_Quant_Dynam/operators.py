@@ -156,7 +156,7 @@ def Sx_symm(N):
     Sx_full = Sx_sparse(N)
     Sx_full_arr = Sx_full.toarray() if hasattr(Sx_full, "toarray") else np.array(Sx_full)
     Sx_reduced = T.T @ (Sx_full_arr @ T)
-    return sparse.csr_matrix(Sx_reduced)
+    return sparse.csr_array(Sx_reduced)
 
 def Sz2_symm(N):
     """
@@ -172,4 +172,4 @@ def Sz2_symm(N):
     Sz_full = Sz_sparse(N)
     Sz_full_arr = Sz_full.toarray() if hasattr(Sz_full, "toarray") else np.array(Sz_full)
     Sz2_reduced = T.T @ ((Sz_full_arr @ Sz_full_arr) @ T)
-    return sparse.csr_matrix(Sz2_reduced)
+    return sparse.csr_array(Sz2_reduced)

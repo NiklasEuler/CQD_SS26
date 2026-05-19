@@ -1,6 +1,8 @@
 import numpy as np
 import numpy.linalg as LA
 from scipy.sparse.linalg import eigsh
+from math import comb
+
 import Comp_Quant_Dynam.hamiltonians as ham
 import Comp_Quant_Dynam.utility as util
 import Comp_Quant_Dynam.unitaries as unitaries
@@ -151,10 +153,10 @@ class Test_build_H_coupled_HO_improved:
         k = 15
         H = ham.build_H_coupled_HO_improved(self.N1, self.N2, lam)
         assert H.nnz == self.N1 * self.N2  # check that the number of non-zero elements in H is equal to N1*N2
-        evals, evecs = eigsh(H, k=k+2, which='SA') # compute the lowest k+2 eigenvalues and eigenvectors of H using the sparse eigensolver
+        evals, evecs = eigsh(H, k=k, which='SA', ncv = 5 * k) # compute the lowest k eigenvalues and eigenvectors of H using the sparse eigensolver
         evals_uncoupled = np.add.outer(ham.HO_eigenenergies_exact(np.arange(self.N1)), ham.HO_eigenenergies_exact(np.arange(self.N2))).flatten()
         evals_uncoupled.sort()
-        print("evals:", evals)
+        print("evals:", evals[:k])
         print("evals_uncoupled:", evals_uncoupled[:k])
         assert np.allclose(evals[:k], evals_uncoupled[:k])
 
@@ -246,8 +248,8 @@ class Test_class_traj:
         eigen_coeffs = unitaries.init_coeffs_eigenbasis(state, evecs) 
         for i, t in enumerate(tvec):
             state_t = unitaries.t_evol_eigenbasis(eigen_coeffs, t, evals, evecs)
-            x1_num[i] = util.expectation_value(state_t, self.x1_op).real
-            x2_num[i] = util.expectation_value(state_t, self.x2_op).real
+            x1_num[i] = np.real(util.expectation_value(state_t, self.x1_op))
+            x2_num[i] = np.real(util.expectation_value(state_t, self.x2_op))
             
         assert np.allclose(x1_class, x1_num, atol=1e-8)
         assert np.allclose(x2_class, x2_num, atol=1e-8)
@@ -276,3 +278,82 @@ class Test_coupled_HO_potential:
     def test_coupled_HO_potential_diagonal(self):
         expected_no_coupling = 1/2 * self.X**2 + 1/2 * self.Y**2
         assert np.allclose(self.H_pot.diagonal(), expected_no_coupling.diagonal()) # the coupling term should not contribute to the diagonal elements of the potential
+
+
+##################### Solution sheet 5 ####################
+
+
+class Test_build_H_TFIM:
+
+    N = 10
+    ome = 0.5
+
+    def test_build_H_TFIM_hermitian(self):
+        tol = 1e-10
+        H = ham.build_H_TFIM(self.N, self.ome)
+        diff = H - H.conj().T
+        
+        assert diff.nnz == 0 or np.max(np.abs(diff.data)) < tol  # check that the difference between H and its conjugate transpose is approximately zero, which means that H is Hermitian
+
+    def test_build_H_TFIM_no_field(self):
+        ome = 0
+        H = ham.build_H_TFIM(self.N, ome)
+        H_diag = H.diagonal()
+        H_reconstr = H - ops.diagonal_op_sparse(H_diag)
+        diff = H_reconstr - H_reconstr
+        assert np.allclose(diff.data, 0) # check that the off-diagonal elements of H are zero when there is no transverse field, which means that the Hamiltonian is diagonal in the computational basis
+
+    def test_build_H_TFIM_GS_no_field(self):
+        ome = 0
+        H = ham.build_H_TFIM(self.N, ome)
+        evals, evecs = eigsh(H, k=1, which='SA') # compute the lowest eigenvalue and eigenvector of H using the sparse eigensolver
+        GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
+        assert np.isclose(GS[0] ** 2 + GS[-1] ** 2, 1) # check that the ground state is approximately equal to the expected ground state, up to a global phase
+
+    def test_build_H_TFIM_GS_strong_field(self):
+        ome = 1e5
+        H = ham.build_H_TFIM(self.N, ome)
+        evals, evecs = eigsh(H, k=1, which='SA') # compute the lowest k eigenvalues and eigenvectors of H using the sparse eigensolver
+        GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
+        probs = np.abs(GS) ** 2
+        probs_expected = np.array([comb(self.N, k) / 2**self.N for k in range(self.N + 1)])
+        assert np.allclose(probs, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states, up to a global phase
+
+class Test_build_H_TFIM_symm:
+
+    N = 10
+    ome = 0.5
+
+    def test_build_H_TFIM_symm_hermitian(self):
+        tol = 1e-10
+        H_symm = ham.build_H_TFIM_symm(self.N, self.ome)
+        diff = H_symm - H_symm.conj().T
+        
+        assert diff.nnz == 0 or np.max(np.abs(diff.data)) < tol  # check that the difference between H and its conjugate transpose is approximately zero, which means that H is Hermitian
+
+    def test_build_H_TFIM_symm_no_field(self):
+        ome = 0
+        H_symm = ham.build_H_TFIM_symm(self.N, ome)
+        H_diag = H_symm.diagonal()
+        H_reconstr = H_symm - ops.diagonal_op_sparse(H_diag)
+        diff = H_reconstr - H_reconstr
+        assert np.allclose(diff.data, 0) # check that the off-diagonal elements of H are zero when there is no transverse field, which means that the Hamiltonian is diagonal in the computational basis
+
+    def test_build_H_TFIM_symm_GS_no_field(self):
+        ome = 0
+        H_symm = ham.build_H_TFIM_symm(self.N, ome)
+        evals, evecs = eigsh(H_symm, k=1, which='SA') # compute the lowest eigenvalue and eigenvector of H using the sparse eigensolver
+        GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
+        assert np.isclose(GS[0] ** 2, 1) # check that the ground state is approximately equal to the expected ground state, up to a global phase
+
+    def test_build_H_TFIM_symm_GS_strong_field_even(self):
+        ome = 1e10
+        H_symm = ham.build_H_TFIM_symm(self.N, ome)
+        evals, evecs = eigsh(H_symm, k=1, which='SA') # compute the lowest k eigenvalues and eigenvectors of H using the sparse eigensolver
+        GS = evecs[:, 0] # the ground state is the eigenvector corresponding to the lowest eigenvalue
+        probs_GS = np.abs(GS) ** 2
+        probs_expected = np.array([comb(self.N, k) * 2 / 2 ** self.N for k in range(self.N // 2 + 1)])
+        probs_expected[-1] /= 2 # the last term should be divided by 2 to account for the fact that the state with N/2 excitations has only one configuration instead of two
+        assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states
+
+    

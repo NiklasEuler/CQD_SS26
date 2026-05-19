@@ -100,3 +100,62 @@ def plot_prob_amplitude_2D(t, wfcts, tvec, L):
     ax.set_xlabel("$x_2$")
     ax.set_ylabel("$x_1$")
     plt.show()
+
+
+##################### Exercise sheet 6 ####################
+
+
+def plot_compare_ED(N, observables_Integrator, observables_ED, tvec_output):
+    """
+    Plots the expectation values of the observables calculated with the numerical integrator and the exact diagonalization results for a system of size `N` at the times given by `tvec_output`.
+    The observables are expected to be stored in the first dimension of the `observables_Integrator` and `observables_ED` arrays, and the time evolution is expected to be stored in the second dimension.
+    """
+    plt.plot(tvec_output, observables_ED[0] / N,'k--')
+    plt.plot(tvec_output, observables_Integrator[0] / N)
+    plt.ylim([-1,1])
+    plt.xlim([0,tvec_output[-1]])
+    plt.xlabel('$t$')
+    plt.ylabel('$S_z/N$')
+    plt.legend(['exact diagonalization','num. integrator'])
+    plt.show()
+
+    plt.plot(tvec_output, observables_ED[1] / N, 'k--')
+    plt.plot(tvec_output, observables_Integrator[1] / N)
+    plt.ylim([-1, 1])
+    plt.xlim([0, tvec_output[-1]])
+    plt.xlabel('$t$')
+    plt.ylabel('$S_x/N$')
+    plt.legend(['exact diagonalization','num. integrator'])
+
+    plt.show()
+
+    plt.plot(tvec_output, np.sqrt(observables_ED[2]) - 1, 'k--')
+    plt.plot(tvec_output, np.sqrt(observables_Integrator[2]) - 1)
+    # plt.ylim([0,2])
+    plt.xlabel('t')
+    plt.ylabel('norm-1')
+    plt.show()
+
+def plot_deviations(idx_stepsize, deviations, tvec_output, step_sizes):
+    """
+    Plots the deviations of the observables Sz, Sx, and the norm of the state from the exact diagonalization results for a given time step size index `idx_stepsize`,
+    deviations array `deviations`, output time vector `tvec_output`, and array of time step sizes `step_sizes`.
+    """
+    
+    plt.plot(tvec_output, deviations[idx_stepsize, 0], 'k')
+    plt.title('time step for Integrator: '+ str(step_sizes[idx_stepsize]))
+    plt.xlabel('t')
+    plt.ylabel('$S_z$ absolute error')
+    plt.show()
+
+    plt.plot(tvec_output, deviations[idx_stepsize, 1], 'k')
+    plt.title('time step for Integrator: '+ str(step_sizes[idx_stepsize]))
+    plt.xlabel('t')
+    plt.ylabel('$S_x$ absolute error')
+    plt.show()
+
+    plt.plot(tvec_output, np.sqrt(deviations[idx_stepsize, 2]), 'k')
+    plt.title('time step for Integrator: '+ str(step_sizes[idx_stepsize]))
+    plt.xlabel('t')
+    plt.ylabel('norm error')
+    plt.show()

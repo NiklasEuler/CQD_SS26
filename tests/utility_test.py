@@ -172,13 +172,17 @@ class Test_expectation_value:
 
     N = 100
 
+    L = 20
+    npoints = 2001
+    xvals, dx = util.create_xvals(L, npoints)
+
     def test_expectation_value_hermitian(self):
         # test that the expectation value of a Hermitian operator is real
         alpha = 1 + 1j
         state = util.create_coherent_state(self.N, alpha)
         x_op = ops.x_operator_sparse(self.N).toarray()
         exp_val = util.expectation_value(state, x_op)
-        assert np.isclose(exp_val.imag, 0)
+        assert np.isclose(np.imag(exp_val), 0)
 
     def test_expectation_value_known(self):
         # test the expectation value of the number operator in a coherent state, which should be |alpha|^2
@@ -189,3 +193,26 @@ class Test_expectation_value:
         exp_val = util.expectation_value(state, n_op)
         expected = np.abs(alpha)**2
         assert np.isclose(exp_val, expected, atol=1e-10)
+
+    def test_expectation_value_iterable(self):
+        # test that the function can handle an iterable of operators
+        x0 = -1
+        sigma = 1
+        p0 = 1
+        state = util.gaussian_wave_packet(self.xvals, x0=x0, sigma=sigma, p0=p0)
+        print("x_prob = ", sum(np.abs(state)**2 * self.xvals) * self.dx)
+        
+        
+        x_op = np.diag(self.xvals) # position operator in the x basis
+        p_op = np.zeros((self.npoints, self.npoints), dtype=complex) # momentum operator in the x basis, using finite difference approximation
+        for i in range(1, self.npoints - 1):
+            p_op[i, i - 1] = 1j / (2 * self.dx)
+            p_op[i, i + 1] = -1j / (2 * self.dx)
+
+        exp_vals = util.expectation_value(state, [x_op, p_op])
+        assert len(exp_vals) == 2
+        assert np.isclose(np.imag(exp_vals[0]), 0) # expectation value of x should be real
+        assert np.isclose(np.imag(exp_vals[1]), 0) # expectation value of p should be real
+        expected = [x0, p0]
+        exp_val_norm = np.real(exp_vals) * self.dx
+        assert np.allclose(exp_val_norm, expected, atol=1e-4)

@@ -113,10 +113,12 @@ class Test_calc_expv_ED:
         assert np.allclose(expv[1, :], -1) # check that the expectation value of sigma_z on site 4 is always -1, since the Hamiltonian only acts on site 3 and does not affect site 4
         expected = -1 * np.cos(tvec) # the expectation value of sigma_z on site 3 should oscillate as -cos(t) since the Hamiltonian is a sigma_x term on site 3
         diff = expv[0, :] - expected
-        print("Difference between computed and expected expectation values for sigma_z on site 3:", diff)
-        print("Maximum absolute difference:", np.max(np.abs(diff)))
-        print("Midpoint", expv[0, t_steps // 2], "Expected at midpoint:", expected[t_steps // 2])
-        assert np.allclose(expv[0, :], expected, atol = 1e-2) # check that the expectation value of sigma_z on site 3 approximately matches the expected oscillation, allowing for some numerical error
+        assert np.allclose(expv[0, :], expected, atol = 1e-2), (
+            "Expectation value of sigma_z on site 3 does not match the expected oscillation; "
+            f"max_abs_diff={np.max(np.abs(diff))}, "
+            f"midpoint={expv[0, t_steps // 2]}, "
+            f"expected_midpoint={expected[t_steps // 2]}"
+        ) # check that the expectation value of sigma_z on site 3 approximately matches the expected oscillation, allowing for some numerical error
 
     def test_calc_expv_ED_warnings(self):
         N = 8

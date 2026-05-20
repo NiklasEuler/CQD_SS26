@@ -107,3 +107,48 @@ class Test_Sx_Sz_sparse:
 
     def test_Sz_trace(self):
         assert np.isclose(self.Sz_op.trace(), 0)
+
+
+class Test_sigma_x_y_z_sparse:
+
+    N = 5
+
+    sigma_x_op = ops.sigma_x_sparse()
+    sigma_y_op = ops.sigma_y_sparse()
+    sigma_z_op = ops.sigma_z_sparse()
+
+    def test_sigma_x_hermiticity(self):
+        diff = self.sigma_x_op - self.sigma_x_op.T.conj()
+        assert np.allclose(diff.data, 0)
+
+    def test_sigma_y_hermiticity(self):
+        diff = self.sigma_y_op - self.sigma_y_op.T.conj()
+        assert np.allclose(diff.data, 0)
+
+    def test_sigma_z_hermiticity(self):
+        diff = self.sigma_z_op - self.sigma_z_op.T.conj()
+        assert np.allclose(diff.data, 0)
+
+    def test_sigma_x_trace(self):
+        assert np.isclose(self.sigma_x_op.trace(), 0)
+    
+    def test_sigma_y_trace(self):
+        assert np.isclose(self.sigma_y_op.trace(), 0)
+    
+    def test_sigma_z_trace(self):
+        assert np.isclose(self.sigma_z_op.trace(), 0)
+
+    def test_sigma_z_x_commutation(self):
+        commutator = self.sigma_z_op @ self.sigma_x_op - self.sigma_x_op @ self.sigma_z_op
+        diff = commutator - 2j * self.sigma_y_op
+        assert np.allclose(diff.data, 0)
+
+    def test_sigma_y_z_commutation(self):
+        commutator = self.sigma_y_op @ self.sigma_z_op - self.sigma_z_op @ self.sigma_y_op
+        diff = commutator - 2j * self.sigma_x_op
+        assert np.allclose(diff.data, 0)
+
+    def test_sigma_x_y_commutation(self):
+        commutator = self.sigma_x_op @ self.sigma_y_op - self.sigma_y_op @ self.sigma_x_op
+        diff = commutator - 2j * self.sigma_z_op
+        assert np.allclose(diff.data, 0)

@@ -58,11 +58,6 @@ def schroedinger_diff_eq(t, y, H_mat):
     Returns the right-hand side of the time-independent Schrödinger equation `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat`.
     This function can be used with ODE integrators that require a function of this form.
     """
-
-    # things to think about:
-    # how efficient is @ for sparse matrices? Is there a more efficient method?
-    # improvement by using the Jacobian?
-
     return -1j * H_mat @ y
 
 def Euler_step(y, H_mat, dt, stepper_args):
@@ -72,6 +67,10 @@ def Euler_step(y, H_mat, dt, stepper_args):
 
     increment = schroedinger_diff_eq(0, y, H_mat) # calculate the increment using the right-hand side of the Schrödinger equation
 
+    # things to think about:
+    # how efficient is @ for sparse matrices? Is there a more efficient method?
+    # improvement by using the Jacobian?
+    
     return y + dt * increment
 
 def loop_time_step(stepper_func, obsv_vec, H_mat, ini, tvec, red_factor, n_red_step, stepper_args):

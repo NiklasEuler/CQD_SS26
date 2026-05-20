@@ -3,8 +3,7 @@ import numpy.linalg as LA
 import time
 import warnings
 
-import Comp_Quant_Dynam.operators as ops
-from Comp_Quant_Dynam.utility import expectation_value
+from Comp_Quant_Dynam.utility import expectation_value, _check_if_sized
 
 
 #################### Solution sheet 2 ####################
@@ -67,6 +66,7 @@ def t_evol_split_step_fourier(psi0, V_func, tvec, xvals):
 
     return psit
 
+
 #################### Exercise sheet 6 ####################
 
 
@@ -76,8 +76,7 @@ def calc_expv_ED(obsv_vec, H_mat, ini, tvec):
     and initial state `ini` using exact diagonalization.
     """
 
-    n_obsv = len(obsv_vec)
-    
+    n_obsv, obsv_vec = _check_if_sized(obsv_vec)
     observables = np.zeros((n_obsv, len(tvec)), dtype=float) # container for results
 
     # ED solution

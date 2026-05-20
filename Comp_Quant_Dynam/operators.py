@@ -173,3 +173,33 @@ def Sz2_symm(N):
     Sz_full_arr = Sz_full.toarray() if hasattr(Sz_full, "toarray") else np.array(Sz_full)
     Sz2_reduced = T.T @ ((Sz_full_arr @ Sz_full_arr) @ T)
     return sparse.csr_array(Sz2_reduced)
+
+def sigma_x_sparse():
+    """
+    Returns the single-site sigma_x operator for a spin-1/2 particle as a sparse matrix.
+    The sigma_x operator is defined as:
+    sigma_x |0> = |1>
+    sigma_x |1> = |0>
+    """
+
+    return sparse.csr_array([[0, 1], [1, 0]])
+
+def sigma_y_sparse():
+    """
+    Returns the single-site sigma_y operator for a spin-1/2 particle as a sparse matrix.
+    The sigma_y operator is defined as:
+    sigma_y |0> = -i |1>
+    sigma_y |1> = i |0>
+    """
+
+    return sparse.csr_array([[0, 1j], [-1j, 0]])
+
+def sigma_z_sparse():
+    """
+    Returns the single-site sigma_z operator for a spin-1/2 particle as a sparse matrix.
+    The sigma_z operator is defined as:
+    sigma_z |0> = -|0>
+    sigma_z |1> = |1>
+    """
+
+    return sparse.csr_array([[-1, 0], [0, 1]])

@@ -17,7 +17,7 @@ class Test_integrate_ODE:
     
     def test_integrate_ODE_ED(self):
         N = 4
-        state = np.eye(1, 2**N, 6).flatten() # initial state |00110>
+        state = np.eye(1, 2**N, 6).flatten() # initial state |0110>
         sig_x = ops.sigma_x_sparse() # single-site sigma_x operator
         sig_y = ops.sigma_y_sparse() # single-site sigma_y operator
         
@@ -40,7 +40,7 @@ class Test_integrate_ODE:
 
     def test_integrate_ODE_warnings(self):
         N = 4
-        state = np.eye(1, 2**N, 8).flatten() # initial state |01000>
+        state = np.eye(1, 2**N, 8).flatten() # initial state |1000>
         sig_x = ops.sigma_x_sparse() # single-site sigma_x operator
         sig_z = ops.sigma_z_sparse() # single-site sigma_z operator
 

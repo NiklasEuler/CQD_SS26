@@ -1,10 +1,9 @@
 import numpy as np   # standard numerics library
 import numpy.linalg as LA
-from collections.abc import Iterable, Sized
 import time
 import warnings
 
-from Comp_Quant_Dynam.utility import expectation_value
+from Comp_Quant_Dynam.utility import expectation_value, _check_if_sized
 
 
 #################### Solution sheet 2 ####################
@@ -77,16 +76,7 @@ def calc_expv_ED(obsv_vec, H_mat, ini, tvec):
     and initial state `ini` using exact diagonalization.
     """
 
-    if isinstance(obsv_vec, Iterable) and not isinstance(obsv_vec, (str, bytes)) and getattr(obsv_vec, "ndim", None) != 2:
-        if isinstance(obsv_vec, Sized):
-            n_obsv = len(obsv_vec)
-        else:
-            # e.g. generator: materialize once so length is defined
-            obsv_vec = tuple(obsv_vec)
-            n_obsv = len(obsv_vec)
-    else:
-        n_obsv = 1
-
+    n_obsv, obsv_vec = _check_if_sized(obsv_vec)
     observables = np.zeros((n_obsv, len(tvec)), dtype=float) # container for results
 
     # ED solution

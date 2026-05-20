@@ -199,7 +199,7 @@ def sigma_z_sparse():
     Returns the single-site sigma_z operator for a spin-1/2 particle as a sparse matrix.
     The sigma_z operator is defined as:
     sigma_z |0> = -|0>
-    sigma_z |1> =|1>
+    sigma_z |1> = |1>
     """
 
     return sparse.csr_array([[-1, 0], [0, 1]])

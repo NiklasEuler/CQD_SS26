@@ -3,6 +3,14 @@ import sys
 import subprocess
 import tempfile
 
+import pytest
+
+
+pytestmark = pytest.mark.skipif(
+    os.getenv("RUN_EXERCISE_SHEET_TESTS") != "1",
+    reason="exercise sheet notebook tests are disabled; set RUN_EXERCISE_SHEET_TESTS=1 to enable them",
+)
+
 
 class Test_exercise_sheets:
 

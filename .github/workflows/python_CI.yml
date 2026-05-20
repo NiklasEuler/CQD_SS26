@@ -12,6 +12,9 @@ on:
 jobs:
   build:
 
+    env:
+      RUN_EXERCISE_SHEET_TESTS: ${{ github.event_name == 'pull_request' && '1' || '' }}
+
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -39,9 +42,9 @@ jobs:
         if (Test-Path requirements.txt) { pip install -r requirements.txt }
       shell: pwsh
       if: matrix.os == 'windows-latest'
-    - name: Install project (editable) 	# CRITICAL: makes "import myproject" work
+    - name: Install project (editable) # CRITICAL: makes "import myproject" work
       run: |
-        pip install -e .[test]              	# This puts your package on sys.path
+        pip install -e .[test]               # This puts your package on sys.path
     - name: Test with pytest 
       run: |
         pytest --cov --junitxml=junit.xml -o junit_family=legacy

@@ -216,3 +216,25 @@ class Test_expectation_value:
         expected = [x0, p0]
         exp_val_norm = np.real(exp_vals) * self.dx
         assert np.allclose(exp_val_norm, expected, atol=1e-4)
+
+class Test_Husimi_proj:
+
+    N = 100
+    phi_test = np.pi / 3
+    psi_top = util.CSS(N, phi_test, np.pi / 2) # top state of the CSS basis
+    psi_front = util.CSS(N, np.pi / 2, phi_test) # front state of the CSS basis
+    psi_back = util.CSS(N, np.pi / 2, np.pi - phi_test) # back state of the CSS basis
+    ngrid = 100
+    X, Y, H_top = util.Husimi_top(N, psi_top, ngrid, ngrid)
+    Z, Y, H_front = util.Husimi_front(N, psi_front, ngrid, ngrid)
+    Z, Y, H_back = util.Husimi_back(N, psi_back, ngrid, ngrid)
+
+    def test_husimi_front_back_symmetry(self):
+        # test that the Husimi functions for the front and back states are symmetric with respect to the phi axis
+        diff = self.H_front - self.H_back
+        assert np.allclose(diff, 0, atol=1e-10)
+    
+    def test_husimi_top_front_symmetry(self):
+        # test that the Husimi functions for the top and front states are symmetric with respect to the theta axis
+        diff = self.H_top - self.H_front
+        assert np.allclose(diff, 0, atol=1e-10)

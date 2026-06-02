@@ -109,7 +109,7 @@ class Test_integrate_ODE_contd:
     def test_integrate_ODE_ED_Arnoldi(self):
         stepper_func = integrators.Arnoldi_step
         int_steps_per_dtout = 5
-        krylov_dim = 10
+        krylov_dim = 3
         stepper_args = [krylov_dim]
         observables_int = integrators.integrate_ODE(stepper_func, self.obsv_vec, self.H, self.state, self.tvec, int_steps_per_dtout, stepper_args)
         print("Deviation between ED and integration results:", np.max(np.abs(self.observables_ED - observables_int)))

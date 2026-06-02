@@ -5,15 +5,15 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
 
     env:
-      RUN_EXERCISE_SHEET_TESTS: ${{ github.event_name == 'pull_request' && '1' || '' }}
+      RUN_EXERCISE_SHEET_TESTS: ${{ contains(github.event.head_commit.message, '[notebooks]') || contains(github.event.pull_request.body, '[notebooks]') || github.event_name == 'workflow_dispatch' && '1' || '' }}
 
     runs-on: ${{ matrix.os }}
     strategy:

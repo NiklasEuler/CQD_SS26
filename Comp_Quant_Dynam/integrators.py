@@ -1,5 +1,8 @@
 import numpy as np   # standard numerics library
 import numpy.linalg as LA
+from scipy import sparse
+import scipy.linalg as sciLA
+import scipy.sparse.linalg as sLA
 import time
 import warnings
 
@@ -57,6 +60,7 @@ def schroedinger_diff_eq(t, y, H_mat):
     """
     Returns the right-hand side of the time-independent Schrödinger equation `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat`.
     This function can be used with ODE integrators that require a function of this form.
+    The argument `t` is included for compatibility with ODE integrators, but it is not used in this function since the Hamiltonian is time-independent.
     """
     return -1j * H_mat @ y
 
@@ -120,8 +124,8 @@ def generate_krylov_subspace(N, n, y, H_mat):
     """
     # note: h is generated as a dense matrix, making it sparse may improve performance
     
-    Qs = np.zeros((N+1, n+1), dtype = complex) # dimension of Krylov subspace is n+1
-    h = np.zeros((n+1, n+1), dtype = complex)
+    Qs = np.zeros((N + 1, n + 1), dtype = complex) # dimension of Krylov subspace is n+1
+    h = np.zeros((n + 1, n + 1), dtype = complex)
     Qs[:, 0] = y / LA.norm(y) # normalize just in case
     for i in range(1,n+1):
         v = H_mat @ Qs[:, i-1] # apply H to previous Krylov vector
@@ -148,3 +152,64 @@ def generate_krylov_subspace(N, n, y, H_mat):
     h[(n - 1) : (n + 1), n] = hcol
     h[n, n - 1] = hcol[0].conj()
     return Qs, h
+
+
+##################### Solution sheet 6 ###################
+
+def RK2_step(y, H_mat, dt, stepper_args):
+    """
+    Returns the next step of the second-order Runge-Kutta method for integrating the Schrödinger equation
+    `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat` with time step size `dt`.
+    """
+
+    Hy = H_mat @ y
+    return y - 1j * dt * Hy - dt ** 2 / 2 * H_mat @ Hy
+
+def RKn_step(y, H_mat, dt, stepper_args):
+    """
+    Returns the next step of the n-th order Runge-Kutta method for integrating the Schrödinger equation
+    `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat` with time step size `dt`.
+    The order `n` is provided in the `stepper_args`.
+    """
+
+    n = int(stepper_args[0]) # order of the Runge-Kutta method
+    y_j = yout = y
+    for i in range(1, n + 1):
+        y_j =  dt / i * schroedinger_diff_eq(0, y_j, H_mat)
+        yout = yout + y_j
+    return yout
+
+def CN_step(y, H_mat, dt, stepper_args):
+    """
+    Returns the next step of the Crank-Nicolson method for integrating the Schrödinger equation
+    `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat` with time step size `dt`.
+    Ideally, we would like to precompute the A and B matrices for the Crank-Nicolson method, but since we want to use this function with the loop_time_step function, we need to compute them in each step.
+    If we wanted to avoid this, we would need to change the loop_time_step function to allow for precomputation of these matrices.
+    """
+
+    dim = H_mat.shape[0]
+    A = sparse.csr_array(sparse.eye(dim) + 1j * dt / 2 * H_mat)
+    B = sparse.csr_array(sparse.eye(dim) - 1j * dt / 2 * H_mat)
+    RHS = B @ y
+    return sLA.spsolve(A, RHS)
+
+def Arnoldi_step(y, H_mat, dt, stepper_args):
+    """
+    Returns the next step of the Arnoldi method for integrating the Schrödinger equation
+    `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat` with time step size `dt`.
+    The order `n` of the Arnoldi method (i.e., the dimension of the Krylov subspace) is provided in the `stepper_args`.
+    """
+    n = int(stepper_args[0]) # order of the Arnoldi method, i.e., dimension of the Krylov subspace is n+1
+    N = len(y) - 1 # dimension of the system is N+1
+    Qs, h = generate_krylov_subspace(N, n, y, H_mat)
+    e1 = np.eye(n + 1)[0]
+    return Qs @ (sciLA.expm(-1j * dt * h) @ e1)
+
+def scipyODE_step(y, H_mat, dt,stepper_args):
+    """Returns the next step of the ODE integrator defined by `stepper_args` for integrating the Schrödinger equation
+    `dy/dt = -i H_mat @ y` for a state vector `y` and Hamiltonian `H_mat` with time step size `dt`.
+    The scipy ODE integrator is provided in `stepper_args` and is assumed to be already initialized with the initial value and the Hamiltonian as a parameter.
+    """
+    r = stepper_args[0] # r is the ODE integrator object that has already been initialized with the initial value and the Hamiltonian as a parameter
+    r.integrate(r.t + dt)
+    return r.y

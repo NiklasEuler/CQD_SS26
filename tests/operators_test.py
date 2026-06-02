@@ -87,15 +87,20 @@ class Test_n_proj_operator_sparse:
 ##################### Solution sheet 5 ####################
 
 
-class Test_Sx_Sz_sparse:
+class Test_Sx_Sy_Sz_sparse:
     
     N = 5
 
     Sx_op = ops.Sx_sparse(N)
+    Sy_op = ops.Sy_sparse(N)
     Sz_op = ops.Sz_sparse(N)
 
     def test_Sx_hermiticity(self):
         diff = self.Sx_op - self.Sx_op.T.conj()
+        assert np.allclose(diff.data, 0)
+
+    def test_Sy_hermiticity(self):
+        diff = self.Sy_op - self.Sy_op.T.conj()
         assert np.allclose(diff.data, 0)
 
     def test_Sz_hermiticity(self):
@@ -108,7 +113,24 @@ class Test_Sx_Sz_sparse:
     def test_Sz_trace(self):
         assert np.isclose(self.Sz_op.trace(), 0)
 
+    def test_Sy_trace(self):
+        assert np.isclose(self.Sy_op.trace(), 0)
 
+    def test_Sz_Sx_commutation(self):
+        commutator = self.Sz_op @ self.Sx_op - self.Sx_op @ self.Sz_op
+        diff = commutator - 1j * self.Sy_op
+        assert np.allclose(diff.data, 0)
+
+    def test_Sx_Sy_commutation(self):
+        commutator = self.Sx_op @ self.Sy_op - self.Sy_op @ self.Sx_op
+        diff = commutator - 1j * self.Sz_op
+        assert np.allclose(diff.data, 0)
+
+    def test_Sy_Sz_commutation(self):
+        commutator = self.Sy_op @ self.Sz_op - self.Sz_op @ self.Sy_op
+        diff = commutator - 1j * self.Sx_op
+        assert np.allclose(diff.data, 0)
+        
 class Test_sigma_x_y_z_sparse:
 
     N = 5

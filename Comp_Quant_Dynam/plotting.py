@@ -169,21 +169,30 @@ def plot_deviations(idx_stepsize, deviations, tvec_output, step_sizes):
 ##################### Exercise sheet 7 ####################
 
 def rotation_bloch_sphere(phi, ini, operator, bloch):
-    # rotate by an angle phi 
-    # (using expm for convenience - You could also calculate the component vector after a general rotation analytically)
+    """
+    Rotates a state `ini` on the Bloch sphere by an angle `phi` around a given `operator`, and updates the Bloch sphere visualization `bloch` accordingly.
+    The `operator` is expected to be a 2x2 matrix representing the rotation axis, and `ini` is expected to be a 2-dimensional state vector representing the initial state on the Bloch sphere.
+    The function calculates the new state after rotation, computes the expectation values of the spin components, and updates the Bloch sphere visualization with the new state.
+    """
+
     sx = operators.sigma_x_sparse() / 2
     sy = operators.sigma_y_sparse() / 2
     sz = operators.sigma_z_sparse() / 2
     spin_obsv = [sx, sy, sz]
     state = sLA.expm(-1j * phi * operator) @ ini
     # calculate the spin expectation values
-    spin_comps = utility.expectation_value(state, spin_obsv)
+    spin_comps = np.real(utility.expectation_value(state, spin_obsv))
     # update the existing sphere
     bloch.clear()
     bloch.add_points(2 * spin_comps)
     bloch.show()
 
 def plot_H_all(Hfront, Hback, Htop, grid, HscaleMax = 1.0):
+    """
+    Plots the precomputed Husimi distributions for the front, back, and top views, given by `Hfront`, `Hback`, and `Htop`, respectively, on a grid defined by `grid` and with a maximum scale for the color map defined by `HscaleMax`.
+    The function creates a figure with three subplots for the front, back, and top views.
+    """
+
     plt.figure(figsize = (15, 4))
     plt.subplot(1, 3, 1) # front
     plt.imshow(Hfront, extent=(-1, 1, -1, 1), aspect=1)
@@ -205,6 +214,11 @@ def plot_H_all(Hfront, Hback, Htop, grid, HscaleMax = 1.0):
     plt.ylabel('x')
     plt.show()
 
-def plot_H_wrapper_interact(it,HfrontAll, HbackAll, HtopAll, grid, HscaleMax):    
+def plot_H_wrapper_interact(it,HfrontAll, HbackAll, HtopAll, grid, HscaleMax):
+    """
+    Wrapper function for interactive plotting of the Husimi distributions for the front, back, and top views at a given time index `it`,
+    using the precomputed Husimi distributions `HfrontAll`, `HbackAll`, and `HtopAll`, on a grid defined by `grid` and with a maximum scale for the color map defined by `HscaleMax`.
+    """
+
     it = int(it)
     plot_H_all(HfrontAll[:,:,it], HbackAll[:,:,it], HtopAll[:,:,it], grid, HscaleMax)

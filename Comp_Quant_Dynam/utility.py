@@ -142,9 +142,9 @@ def CSS(N, theta, phi):
     Returns the coefficients of the coherent spin state (CSS) |theta, phi> in the Dicke basis of dimension N+1.
     The CSS is defined as:
     
-    |theta, phi> = sum_{k=0}^N sqrt(binomial(N,k)) * (cos(theta/2)^(N-k) * sin(theta/2)^k * exp(i * k * phi)) |k>
+    |theta, phi> = sum_{k=0}^N sqrt(binomial(N,k)) * (cos(theta/2)^k * sin(theta/2)^(N-k) * exp(i * k * phi)) |k>
     
-    where |k> is the Dicke state with k excitations (i.e. k spins up and N-k spins down).
+    where |k> is the Dicke state with k 0-spins (spin up) and N-k 1-spins (spin down).
     Note that the CSS is a superposition of Dicke states with different numbers of excitations, and the coefficients depend on the angles theta and phi.
     The CSS is a generalization of the coherent state for spin systems, and it can be used to describe states that are localized around a specific point on the Bloch sphere.
     """
@@ -167,13 +167,16 @@ def proj_CSS(psi, N, theta, phi):
     css_state = CSS(N, theta, phi)
     return np.abs(psi.conj().T @ css_state) ** 2
 
-# Make a Husimi plot in theta and phi
 def Husimi_th_ph(N, psi, nth, nph):
-    # make a grid
-    Theta = np.linspace(0, pi, nth + 1, endpoint=True)
+    """
+    Computes the Husimi distribution of a state `psi` on a grid of angles `theta` and `phi` for a system of `N` spins.
+    The grid is defined by `nth` points in the theta direction ([0, pi]) and `nph` points in the phi direction ([0, 2*pi)).
+    Returns the grid of theta and phi values and the corresponding Husimi distribution values.
+    """
+    Theta = np.linspace(0, pi, nth, endpoint=True)
     Phi = np.linspace(0, 2 * pi, nph, endpoint=False)
     # container for Husimi function
-    H = np.zeros((nth + 1, nph))
+    H = np.zeros((nth, nph))
     # calculate H on the grid
     for x_idx, theta in enumerate(Theta):
         for y_idx, phi in enumerate(Phi):
@@ -181,19 +184,30 @@ def Husimi_th_ph(N, psi, nth, nph):
     return Theta, Phi, H
 
 
-# Make a Husimi plot in z and phi
 def Husimi_z_th(N, psi, nz, nph):
-    Z = np.linspace(-1, 1, nz + 1, endpoint=True)
+    """
+    Computes the Husimi distribution of a state `psi` on a grid of `z` and `phi` for a system of `N` spins.
+    The grid is defined by `nz` points in the z direction ([-1, 1]) and `nph` points in the phi direction ([0, 2*pi)).
+    Returns the grid of z and phi values and the corresponding Husimi distribution values.
+    """
+
+    Z = np.linspace(-1, 1, nz, endpoint=True)
     th = arccos(Z)
     Phi = np.linspace(0, 2 * pi, nph, endpoint=False)
-    H = np.zeros((nz + 1, nph))
+    H = np.zeros((nz, nph))
     for x_idx, theta in enumerate(th):
         for y_idx, phi in enumerate(Phi):
             H[x_idx, y_idx] = proj_CSS(psi, N, theta, phi)
     return Z, Phi, H
+    
 
-# Make a Husimi plot in z and y looking from +x direction
 def Husimi_front(N, psi, nz, ny):
+    """
+    Computes the Husimi distribution of a state `psi` on a grid of `z` and `y` for a system of `N` spins, looking from the +x direction.
+    The grid is defined by `nz` points in the z direction ([-1, 1]) and `ny` points in the y direction ([-1, 1]).
+    Returns the grid of z and y values and the corresponding Husimi distribution values.
+    """
+
     Z = np.linspace(-1, 1, nz, endpoint=True)
     Y = np.linspace(-1, 1, ny, endpoint=True)
     H = np.zeros((nz, ny))
@@ -205,17 +219,22 @@ def Husimi_front(N, psi, nz, ny):
                 mask[idx_z, idx_y] = True
             else:
                 theta = arccos(z)
-                if theta==0 or theta==np.pi: # in this case phi is undetermined
+                if theta == 0 or theta == np.pi: # in this case phi is undetermined
                     phi = 0
                 else:
                     phi = arcsin(y / sin(theta)) # corresponds to positive x
                 H[idx_z, idx_y] = proj_CSS(psi, N, theta, phi)
                 mask[idx_z, idx_y] = False
-            H = np.ma.array(H, mask=mask)
+    H = np.ma.array(H, mask=mask)
     return Z, Y, H
 
-# Make a Husimi plot in z and y looking from -x direction
 def Husimi_back(N, psi, nz, ny):
+    """
+    Computes the Husimi distribution of a state `psi` on a grid of `z` and `y` for a system of `N` spins, looking from the -x direction.
+    The grid is defined by `nz` points in the z direction ([-1, 1]) and `ny` points in the y direction ([-1, 1]).
+    Returns the grid of z and y values and the corresponding Husimi distribution values.
+    """
+    
     Z = np.linspace(-1, 1, nz, endpoint=True)
     Y = np.linspace(-1, 1, ny, endpoint=True)
     H = np.zeros((nz, ny))
@@ -233,11 +252,16 @@ def Husimi_back(N, psi, nz, ny):
                     phi = pi - arcsin(y / sin(theta)) # corresponds to negative x
                 H[idx_z, idx_y] = proj_CSS(psi, N, theta, phi)
                 mask[idx_z, idx_y] = False
-            H = np.ma.array(H, mask = mask)
+    H = np.ma.array(H, mask = mask)
     return Z, Y, H
 
-# Make a Husimi plot in x and y looking from +z direction
-def Husimi_top(N,psi,nx,ny):
+def Husimi_top(N, psi, nx, ny):
+    """
+    Computes the Husimi distribution of a state `psi` on a grid of `x` and `y` for a system of `N` spins, looking from the +z direction.
+    The grid is defined by `nx` points in the x direction ([-1, 1]) and `ny` points in the y direction ([-1, 1]).
+    Returns the grid of x and y values and the corresponding Husimi distribution values.
+    """
+    
     X = np.linspace(-1 , 1, nx, endpoint=True)
     Y = np.linspace(-1 , 1, ny, endpoint=True)
     H = np.zeros((nx, ny))
@@ -262,5 +286,5 @@ def Husimi_top(N,psi,nx,ny):
                     phi = pi + arctan(y / x)
                 H[idx_x, idx_y] = proj_CSS(psi, N, theta, phi)
                 mask[idx_x, idx_y] = False
-            H = np.ma.array(H, mask=mask)
+    H = np.ma.array(H, mask=mask)
     return X, Y, H

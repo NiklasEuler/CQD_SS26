@@ -111,6 +111,18 @@ def Sx_sparse(N):
     S_plus = sparse.diags_array(S_plus_vec, offsets=-1)
     return (S_plus + S_plus.T) / 2
 
+def Sy_sparse(N):
+    """
+    Returns the Sy operator for a system of `N` spin-1/2 particles as a sparse matrix.
+    The Sy operator is defined as:
+    Sy = (S+ - S-) / (2i)
+    where S+ and S- are the raising and lowering operators, respectively.
+    """
+    
+    S_plus_vec = np.sqrt((N - np.arange(0, N)) * (np.arange(0, N) + 1)) 
+    S_plus = sparse.diags_array(S_plus_vec, offsets=-1)
+    return (S_plus - S_plus.T) / (2j)
+
 def Sz_sparse(N):
     """
     Returns the Sz operator for a system of `N` spin-1/2 particles as a sparse matrix.
@@ -121,6 +133,21 @@ def Sz_sparse(N):
     
     Sz_vec = np.arange(N + 1) - N / 2 # from -N/2 to N/2 in steps of 1 
     return sparse.diags_array(Sz_vec)
+
+def build_spin_ops_sparse(N):
+    """
+    Returns the collective spin operators Sx, Sy, and Sz for a system of `N` spin-1/2 particles as sparse matrices.
+    The collective spin operators are defined as:
+    Sx = sum_i sigma_x^i / 2
+    Sy = sum_i sigma_y^i / 2
+    Sz = sum_i sigma_z^i / 2
+    where sigma_x^i, sigma_y^i, and sigma_z^i are the single-site Pauli operators acting on the i-th particle.
+    """
+
+    Sx = Sx_sparse(N)
+    Sy = Sy_sparse(N)
+    Sz = Sz_sparse(N)
+    return Sx, Sy, Sz
 
 def _T_positive_parity_symm(N):
     """

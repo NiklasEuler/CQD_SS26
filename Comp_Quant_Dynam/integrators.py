@@ -3,6 +3,7 @@ import numpy.linalg as LA
 from scipy import sparse
 import scipy.linalg as sciLA
 import scipy.sparse.linalg as sLA
+from scipy.integrate import ode
 import time
 import warnings
 
@@ -213,3 +214,49 @@ def scipyODE_step(y, H_mat, dt,stepper_args):
     r = stepper_args[0] # r is the ODE integrator object that has already been initialized with the initial value and the Hamiltonian as a parameter
     r.integrate(r.t + dt)
     return r.y
+
+
+##################### Solution sheet 7 ###################
+
+
+# solve the mean field equations using xyz equations.
+
+def TFIM_MF_diff_eq(t, y, omega):
+    """
+    Returns the right-hand side of the mean-field equations for the transverse-field Ising model (TFIM) in terms of the spin components `y` and the transverse field strength `omega`.
+    The mean-field equations are given by:
+    dy[0]/dt = y[1] * y[2]
+    dy[1]/dt = -y[0] * y[2] + omega * y[2]
+    dy[2]/dt = -omega * y[1]
+    where y[0], y[1], and y[2] correspond to the spin components Sx, Sy, and Sz, respectively.
+    The argument `t` is included for compatibility with ODE integrators, but it is not used in this function since the equations are time-independent.
+    """
+    eqs = [
+        y[1] * y[2],
+        -y[0] * y[2] + omega * y[2],
+        -omega * y[1]
+    ]
+    return eqs
+
+def get_trajectory(y0, tvec, ome):
+    """
+    Returns the trajectory of the spin components for the mean-field equations of the transverse-field Ising model (TFIM) starting from the initial condition `y0`, evaluated at the time steps defined in `tvec`, and using the transverse field strength `ome`.
+    The trajectory is calculated using the ODE integrator from scipy, and the right-hand side of the equations is given by the `TFIM_MF_diff_eq` function.
+    """
+
+    r = ode(TFIM_MF_diff_eq).set_integrator('zvode', method='adams', with_jacobian=False)
+    r.set_initial_value(y0, 0).set_f_params(ome)
+
+    t1 = tvec[-1]
+    dt = tvec[1] - tvec[0]
+    trajectory = np.zeros((len(tvec), 3), dtype=float)
+
+    trajectory[0] = y0
+    i = 1
+    while r.successful() and r.t < t1  and i < len(tvec):
+        r.integrate(r.t+dt)
+        if not np.allclose(np.imag(r.y), 0.0):
+            warnings.warn("Trajectory has nonvanishing imaginary part, taking real part only.", UserWarning, stacklevel=2)
+        trajectory[i] = np.real(r.y)
+        i += 1
+    return trajectory

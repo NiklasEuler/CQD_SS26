@@ -365,3 +365,25 @@ class Test_build_H_TFIM_symm:
         probs_GS = np.abs(GS) ** 2
         probs_expected = np.array([comb(N_odd, k) * 2 / 2 ** N_odd for k in range((N_odd // 2) + 1)])
         assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states
+
+
+##################### Solution sheet 7 ####################
+
+class Test_TFIM_E_MF:
+    
+    z = np.arange(-1, 1.01, 0.01)
+
+    def test_TFIM_E_MF_no_field(self):
+        omega = 0
+        expected = - self.z ** 2 / 2
+        phi = np.pi / 4
+        result = ham.E_MF(self.z, phi, omega)
+        assert np.allclose(expected, result)
+
+    def test_TFIM_E_MF_phi_pi_2(self):
+        omega = 0.5
+        
+        expected = - self.z ** 2 / 2
+        phi = np.pi / 2
+        result = ham.E_MF(self.z, phi, omega)
+        assert np.allclose(expected, result)

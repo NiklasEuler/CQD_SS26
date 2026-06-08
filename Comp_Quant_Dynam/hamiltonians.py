@@ -67,7 +67,7 @@ def H_kinetic_sparse(x):
     off_diag = -0.5 * np.ones(n_points - 1)
     H_kin = sparse.diags_array(
         [main_diag, off_diag, off_diag],
-        offsets = [0, 1, -1],
+        offsets = (0, 1, -1)
     ) / (dx * dx)
     return H_kin
 
@@ -304,3 +304,17 @@ def build_H_TFIM_symm(N, ome):
     H_symm = -Sz2 / N - ome * Sx
     return H_symm
     
+
+##################### Solution sheet 7 ####################
+
+
+def E_MF(z, phi, omega):
+    """
+    Returns the mean-field energy of the transverse field Ising model (TFIM) for a given magnetization `z`, phase `phi`, and transverse field strength `omega`.
+    The mean-field energy is given by:
+    E_MF(z, phi) = -z^2 / 2 - omega * sqrt(1 - z^2) * cos(phi)
+    where z is the magnetization along the z-axis, phi is the phase of the transverse magnetization in the x-y plane, and omega is the strength of the transverse field.
+    """
+    r2 = 1 - z ** 2
+    r2 = np.maximum(r2, 1e-10) # avoid numerical issues when z is close to 1 or -1, which would lead to r being close to zero and causing instability in the calculation of the mean-field energy
+    return -z ** 2 / 2 - omega * np.sqrt(r2) * np.cos(phi)

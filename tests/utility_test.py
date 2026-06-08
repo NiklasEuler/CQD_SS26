@@ -222,7 +222,7 @@ class Test_Husimi_proj:
     N = 100
     #phi_test = np.pi / 3
     #theta_test = np.pi / 2
-    ngrid = 100
+    ngrid = 101
 
     def test_husimi_front_back_symmetry(self):
         # test that the Husimi functions for the front and back states are symmetric with respect to the phi axis

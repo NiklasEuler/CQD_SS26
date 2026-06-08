@@ -221,14 +221,17 @@ class Test_Husimi_proj:
 
     N = 100
     phi_test = np.pi / 3
-    psi_top = util.CSS(N, phi_test, np.pi / 2) # top state of the CSS basis
-    psi_front = util.CSS(N, np.pi / 2, phi_test) # front state of the CSS basis
-    psi_back = util.CSS(N, np.pi / 2, np.pi - phi_test) # back state of the CSS basis
     ngrid = 100
-    X, Y, H_top = util.Husimi_top(N, psi_top, ngrid, ngrid)
-    Z, Y, H_front = util.Husimi_front(N, psi_front, ngrid, ngrid)
-    Z, Y, H_back = util.Husimi_back(N, psi_back, ngrid, ngrid)
 
+    @classmethod
+    def setup_class(cls):
+        cls.psi_top = util.CSS(cls.N, cls.phi_test, np.pi / 2)  # top state of the CSS basis
+        cls.psi_front = util.CSS(cls.N, np.pi / 2, cls.phi_test)  # front state of the CSS basis
+        cls.psi_back = util.CSS(cls.N, np.pi / 2, np.pi - cls.phi_test)  # back state of the CSS basis
+
+        cls.X, cls.Y, cls.H_top = util.Husimi_top(cls.N, cls.psi_top, cls.ngrid, cls.ngrid)
+        cls.Z, cls.Y, cls.H_front = util.Husimi_front(cls.N, cls.psi_front, cls.ngrid, cls.ngrid)
+        cls.Z, cls.Y, cls.H_back = util.Husimi_back(cls.N, cls.psi_back, cls.ngrid, cls.ngrid)
     def test_husimi_front_back_symmetry(self):
         # test that the Husimi functions for the front and back states are symmetric with respect to the phi axis
         diff = self.H_front - self.H_back

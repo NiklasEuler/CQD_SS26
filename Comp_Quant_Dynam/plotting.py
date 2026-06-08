@@ -255,7 +255,7 @@ def plot_trajectory_bloch(t_idx, bloch, trajectory):
 
     t_idx = int(t_idx)
     bloch.clear()
-    bloch.add_points(np.transpose(trajectory[:t_idx]))
+    bloch.add_points(np.transpose(trajectory[: t_idx + 1]))
     bloch.show()
 
 def plot_TWA_distr_bloch(t_idx, bloch, all_trajectories):

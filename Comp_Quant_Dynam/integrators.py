@@ -244,19 +244,23 @@ def get_trajectory(y0, tvec, ome):
     The trajectory is calculated using the ODE integrator from scipy, and the right-hand side of the equations is given by the `TFIM_MF_diff_eq` function.
     """
 
-    r = ode(TFIM_MF_diff_eq).set_integrator('zvode', method='adams', with_jacobian=False)
-    r.set_initial_value(y0, 0).set_f_params(ome)
+    r = ode(TFIM_MF_diff_eq).set_integrator(
+        "vode",
+        method="adams",
+        with_jacobian=False,
+        rtol=1e-10,
+        atol=1e-12,
+    )
+    r.set_initial_value(np.asarray(y0, dtype=float), 0.0).set_f_params(ome)
 
-    t1 = tvec[-1]
-    dt = tvec[1] - tvec[0]
+    t1 = float(tvec[-1])
+    dt = float(tvec[1] - tvec[0])
     trajectory = np.zeros((len(tvec), 3), dtype=float)
 
     trajectory[0] = y0
     i = 1
-    while r.successful() and r.t < t1  and i < len(tvec):
-        r.integrate(r.t+dt)
-        if not np.allclose(np.imag(r.y), 0.0):
-            warnings.warn("Trajectory has nonvanishing imaginary part, taking real part only.", UserWarning, stacklevel=2)
-        trajectory[i] = np.real(r.y)
+    while r.successful() and r.t < t1 and i < len(tvec):
+        r.integrate(r.t + dt)
+        trajectory[i] = r.y
         i += 1
     return trajectory

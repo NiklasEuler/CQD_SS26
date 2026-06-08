@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy import pi, sqrt, exp
 from scipy.sparse import linalg as sLA
+
+import Comp_Quant_Dynam.hamiltonians as hams
 import Comp_Quant_Dynam.utility as utility
 import Comp_Quant_Dynam.operators as operators
 
@@ -222,3 +224,46 @@ def plot_H_wrapper_interact(it,HfrontAll, HbackAll, HtopAll, grid, HscaleMax):
 
     it = int(it)
     plot_H_all(HfrontAll[:,:,it], HbackAll[:,:,it], HtopAll[:,:,it], grid, HscaleMax)
+
+
+##################### Solution sheet 7 ####################
+
+
+def plot_hmf_line(ome):
+    """
+    Plots the mean-field energy landscape as a function of the magnetization `z` for a given value of the transverse field `ome`.
+    The mean-field energy is calculated using the function `hams.E_MF` for a range of `z` values from -1 to 1, and the resulting energy landscape is plotted as a function of `z`.
+    """
+
+    # make a grid
+    nz = 200
+    z = np.linspace(-1, 1, nz, endpoint=True)
+
+    E_MF_points = hams.E_MF(z, 0, ome)
+
+    # set vmax to something small to better resolve regions around minimum
+    plt.plot(z, E_MF_points)
+    plt.ylabel('$h_{mf}$')
+    plt.xlabel('z')
+    plt.show()
+
+def plot_trajectory_bloch(t_idx, bloch, trajectory):
+    """
+    Plots the trajectory of a state on the Bloch sphere at a given time index `t_idx`, using the Bloch sphere visualization `bloch` and the trajectory data stored in `trajectory`.
+    The function updates the preexisting Bloch sphere visualization `bloch` with the points corresponding to the trajectory up to the time index `t_idx`, and then displays the updated Bloch sphere.
+    """
+
+    t_idx = int(t_idx)
+    bloch.clear()
+    bloch.add_points(np.transpose(trajectory[: t_idx + 1]))
+    bloch.show()
+
+def plot_TWA_distr_bloch(t_idx, bloch, all_trajectories):
+    """
+    Plots the distribution of trajectories on the Bloch sphere at a given time index `t_idx`, using the Bloch sphere visualization `bloch` and the trajectory data stored in `all_trajectories`.
+    The function updates the preexisting Bloch sphere visualization `bloch` with the points corresponding to the distribution of trajectories at the time index `t_idx`, and then displays the updated Bloch sphere.
+    """
+    t_idx = int(t_idx)
+    bloch.clear()
+    bloch.add_points(np.transpose(all_trajectories[:, t_idx]))
+    bloch.show()

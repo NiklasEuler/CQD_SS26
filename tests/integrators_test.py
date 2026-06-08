@@ -1,9 +1,7 @@
-import time
-
 import numpy as np
 import numpy.linalg as LA
 import pytest
-import scipy.sparse as sparse
+#import scipy.sparse as sparse
 from scipy.integrate import ode
 
 

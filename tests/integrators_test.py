@@ -66,21 +66,22 @@ class Test_integrate_ODE:
 class Test_integrate_ODE_contd:
 
     N = 4
-    state = np.eye(1, 2**N, 6).flatten() # initial state |0110>
-    sig_x = ops.sigma_x_sparse() # single-site sigma_x operator
-    sig_y = ops.sigma_y_sparse() # single-site sigma_y operator
-    
-    local_dims = [2] * N
-    H = 0.5 * ops.n_party_op_sparse(local_dims, 3, sig_x) + 0.5 * ops.n_party_op_sparse(local_dims, 2, sig_y)
-    
-    t_steps = 100
-    t_end = 10
-    tvec = util.create_tvecs(tsteps=t_steps, dt=t_end / t_steps)
 
-    obsv_vec = [ops.n_party_op_sparse(local_dims, 3, ops.sigma_z_sparse())] # observable: sigma_z on site 3
+    @classmethod
+    def setup_class(cls):
+        cls.state = np.eye(1, 2**cls.N, 6).flatten()  # initial state |0110>
+        sig_x = ops.sigma_x_sparse()  # single-site sigma_x operator
+        sig_y = ops.sigma_y_sparse()  # single-site sigma_y operator
 
-    observables_ED = unitaries.calc_expv_ED(obsv_vec, H, state, tvec)
+        local_dims = [2] * cls.N
+        cls.H = 0.5 * ops.n_party_op_sparse(local_dims, 3, sig_x) + 0.5 * ops.n_party_op_sparse(local_dims, 2, sig_y)
 
+        t_steps = 100
+        t_end = 10
+        cls.tvec = util.create_tvecs(tsteps=t_steps, dt=t_end / t_steps)
+
+        cls.obsv_vec = [ops.n_party_op_sparse(local_dims, 3, ops.sigma_z_sparse())]  # observable: sigma_z on site 3
+        cls.observables_ED = unitaries.calc_expv_ED(cls.obsv_vec, cls.H, cls.state, cls.tvec)
     def test_integrate_ODE_ED_RK2(self):
         stepper_func = integrators.RK2_step
         int_steps_per_dtout = 100

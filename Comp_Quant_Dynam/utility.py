@@ -184,7 +184,7 @@ def Husimi_th_ph(N, psi, nth, nph):
     return Theta, Phi, H
 
 
-def Husimi_z_th(N, psi, nz, nph):
+def Husimi_z_phi(N, psi, nz, nph):
     """
     Computes the Husimi distribution of a state `psi` on a grid of `z` and `phi` for a system of `N` spins.
     The grid is defined by `nz` points in the z direction ([-1, 1]) and `nph` points in the phi direction ([0, 2*pi)).
@@ -219,8 +219,6 @@ def Husimi_front(N, psi, nz, ny):
                 H[idx_z, idx_y] = 0
                 mask[idx_z, idx_y] = True
             else:
-                if abs(z) > 1: # numerical issues close to the boundary
-                    z = int(z / abs(z)) # set to 1 or -1
                 theta = arccos(z)
                 if theta == 0 or theta == np.pi: # in this case phi is undetermined
                     phi = 0
@@ -252,8 +250,6 @@ def Husimi_back(N, psi, nz, ny):
                 H[idx_z, idx_y] = 0
                 mask[idx_z, idx_y] = True
             else:
-                if abs(z) > 1: # numerical issues close to the boundary
-                    z = int(z / abs(z)) # set to 1 or -1
                 theta = arccos(z)
                 if theta == 0 or theta == pi:
                     phi = 0

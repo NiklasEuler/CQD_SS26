@@ -217,6 +217,10 @@ class Test_expectation_value:
         exp_val_norm = np.real(exp_vals) * self.dx
         assert np.allclose(exp_val_norm, expected, atol=1e-4)
 
+
+##################### Exercise sheet 7 ###################
+
+
 class Test_Husimi_proj:
 
     N = 100
@@ -271,3 +275,34 @@ class Test_Husimi_proj:
         #Z, Y, H_back = util.Husimi_back(self.N, psi_back, self.ngrid, self.ngrid)
         diff = H_front - H_top
         assert np.allclose(diff, 0, atol=1e-10)
+
+    def test_husimi_th_phi_symmetry(self):
+        # test that the Husimi functions are symmetric with respect to theta -> pi - theta
+        phi = np.pi / 3
+        theta_1 = np.pi / 3
+        theta_2 = np.pi - theta_1
+
+        psi_1 = util.CSS(self.N, theta_1, phi)  # state of the CSS basis
+        psi_2 = util.CSS(self.N, theta_2, phi)  # state of the CSS basis
+
+        Theta, Phi, H1 = util.Husimi_th_ph(self.N, psi_1, self.ngrid, self.ngrid)
+        Theta, Phi, H2 = util.Husimi_th_ph(self.N, psi_2, self.ngrid, self.ngrid)
+        diff = H1 - np.flip(H2, axis=0) # flip H2 along the theta axis
+        assert np.allclose(diff, 0, atol=1e-10)
+    
+
+    def test_husimi_z_phi_symmetry_phi(self):
+        # test that the Husimi functions are symmetric with respect to z -> -z
+
+        phi = np.pi / 3
+        theta_1 = np.pi / 3
+        theta_2 = np.pi - theta_1
+
+        psi_1 = util.CSS(self.N, theta_1, phi)  # state of the CSS basis
+        psi_2 = util.CSS(self.N, theta_2, phi)  # state of the CSS basis
+
+        Z, Phi, H1 = util.Husimi_z_phi(self.N, psi_1, self.ngrid, self.ngrid)
+        Z, Phi, H2 = util.Husimi_z_phi(self.N, psi_2, self.ngrid, self.ngrid)
+        diff = H1 - np.flip(H2, axis=0) # flip H2 along the z axis
+        assert np.allclose(diff, 0, atol=1e-10)
+    

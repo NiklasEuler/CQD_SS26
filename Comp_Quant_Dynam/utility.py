@@ -184,7 +184,7 @@ def Husimi_th_ph(N, psi, nth, nph):
     return Theta, Phi, H
 
 
-def Husimi_z_th(N, psi, nz, nph):
+def Husimi_z_phi(N, psi, nz, nph):
     """
     Computes the Husimi distribution of a state `psi` on a grid of `z` and `phi` for a system of `N` spins.
     The grid is defined by `nz` points in the z direction ([-1, 1]) and `nph` points in the phi direction ([0, 2*pi)).
@@ -214,7 +214,8 @@ def Husimi_front(N, psi, nz, ny):
     mask = np.zeros_like(H, dtype=bool) # make pixels outside of the circle white
     for idx_z, z in enumerate(Z):
         for idx_y, y in enumerate(Y):
-            if z ** 2 + y ** 2 > 1: # outside allowed region
+            r2 = z ** 2 + y ** 2
+            if r2 >= 1 + 1e-10: # outside allowed region
                 H[idx_z, idx_y] = 0
                 mask[idx_z, idx_y] = True
             else:
@@ -222,7 +223,10 @@ def Husimi_front(N, psi, nz, ny):
                 if theta == 0 or theta == np.pi: # in this case phi is undetermined
                     phi = 0
                 else:
-                    phi = arcsin(y / sin(theta)) # corresponds to positive x
+                    sin_phi = y / sin(theta)
+                    if abs(sin_phi) > 1:
+                        sin_phi = int(sin_phi / abs(sin_phi)) # set to 1 or -1
+                    phi = arcsin(sin_phi) # corresponds to positive x
                 H[idx_z, idx_y] = proj_CSS(psi, N, theta, phi)
                 mask[idx_z, idx_y] = False
     H = np.ma.array(H, mask=mask)
@@ -241,7 +245,8 @@ def Husimi_back(N, psi, nz, ny):
     mask = np.zeros_like(H, dtype=bool)
     for idx_z, z in enumerate(Z):
         for idx_y, y in enumerate(Y):
-            if z ** 2 + y ** 2 > 1:
+            r2 = z ** 2 + y ** 2
+            if r2 >= 1 + 1e-10: # outside allowed region
                 H[idx_z, idx_y] = 0
                 mask[idx_z, idx_y] = True
             else:
@@ -249,7 +254,10 @@ def Husimi_back(N, psi, nz, ny):
                 if theta == 0 or theta == pi:
                     phi = 0
                 else:
-                    phi = pi - arcsin(y / sin(theta)) # corresponds to negative x
+                    sin_phi = y / sin(theta)
+                    if abs(sin_phi) > 1:
+                        sin_phi = int(sin_phi / abs(sin_phi)) # set to 1 or -1
+                    phi = pi - arcsin(sin_phi) # corresponds to negative x
                 H[idx_z, idx_y] = proj_CSS(psi, N, theta, phi)
                 mask[idx_z, idx_y] = False
     H = np.ma.array(H, mask = mask)
@@ -268,20 +276,23 @@ def Husimi_top(N, psi, nx, ny):
     mask = np.zeros_like(H, dtype=bool)
     for idx_x, x in enumerate(X):
         for idx_y, y in enumerate(Y):
-            if x ** 2 + y ** 2 > 1:
+            r2 = x ** 2 + y ** 2
+            if r2 >= 1 + 1e-10: # outside allowed region
                 H[idx_x, idx_y] = 0
                 mask[idx_x, idx_y] = True
             else:
-                z = np.sqrt(1 - x ** 2 - y ** 2)
+                if r2 > 1: # numerical issues close to the boundary
+                    r2 = 1
+                z = np.sqrt(1 - r2)
                 theta = np.arccos(z)
                 # avoid dividing by 0; Gets a bit tricky.
-                if x == 0:
+                if np.isclose(x, 0):
                     if y >= 0:
                         phi = pi / 2
                     else:
                         phi = 3 * pi / 2
                 elif x > 0:
-                    phi = np.arctan(y / x)
+                    phi = arctan(y / x)
                 else:
                     phi = pi + arctan(y / x)
                 H[idx_x, idx_y] = proj_CSS(psi, N, theta, phi)

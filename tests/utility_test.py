@@ -220,24 +220,54 @@ class Test_expectation_value:
 class Test_Husimi_proj:
 
     N = 100
-    phi_test = np.pi / 3
+    #phi_test = np.pi / 3
+    #theta_test = np.pi / 2
     ngrid = 100
 
-    @classmethod
-    def setup_class(cls):
-        cls.psi_top = util.CSS(cls.N, cls.phi_test, np.pi / 2)  # top state of the CSS basis
-        cls.psi_front = util.CSS(cls.N, np.pi / 2, cls.phi_test)  # front state of the CSS basis
-        cls.psi_back = util.CSS(cls.N, np.pi / 2, np.pi - cls.phi_test)  # back state of the CSS basis
-
-        cls.X, cls.Y, cls.H_top = util.Husimi_top(cls.N, cls.psi_top, cls.ngrid, cls.ngrid)
-        cls.Z, cls.Y, cls.H_front = util.Husimi_front(cls.N, cls.psi_front, cls.ngrid, cls.ngrid)
-        cls.Z, cls.Y, cls.H_back = util.Husimi_back(cls.N, cls.psi_back, cls.ngrid, cls.ngrid)
     def test_husimi_front_back_symmetry(self):
         # test that the Husimi functions for the front and back states are symmetric with respect to the phi axis
-        diff = self.H_front - self.H_back
+
+        phi_test = np.pi / 3
+        theta_test = np.pi / 2
+
+        #psi_top = util.CSS(self.N, phi_test, theta_test)  # top state of the CSS basis
+        psi_front = util.CSS(self.N, theta_test, phi_test)  # front state of the CSS basis
+        psi_back = util.CSS(self.N, theta_test, np.pi - phi_test)  # back state of the CSS basis
+
+        Z, Y, H_front = util.Husimi_front(self.N, psi_front, self.ngrid, self.ngrid)
+        Z, Y, H_back = util.Husimi_back(self.N, psi_back, self.ngrid, self.ngrid)
+        diff = H_front - H_back
         assert np.allclose(diff, 0, atol=1e-10)
-    
+
+    def test_husimi_front_back_symmetry_theta_pi(self):
+        # test that the Husimi functions for the front and back states are symmetric with respect to the phi axis
+
+        phi_test = np.pi / 3
+        theta_test = np.pi
+
+        #psi_top = util.CSS(self.N, phi_test, theta_test)  # top state of the CSS basis
+        psi_front = util.CSS(self.N, theta_test, phi_test)  # front state of the CSS basis
+        psi_back = util.CSS(self.N, theta_test, np.pi - phi_test)  # back state of the CSS basis
+
+        Z, Y, H_front = util.Husimi_front(self.N, psi_front, self.ngrid, self.ngrid)
+        Z, Y, H_back = util.Husimi_back(self.N, psi_back, self.ngrid, self.ngrid)
+        diff = H_front - H_back
+        assert np.allclose(diff, 0, atol=1e-10)
+
     def test_husimi_top_front_symmetry(self):
         # test that the Husimi functions for the top and front states are symmetric with respect to the theta axis
-        diff = self.H_top - self.H_front
+        # test that the Husimi functions for the front and back states are symmetric with respect to the phi axis
+
+        phi_test = np.pi / 3
+        theta_test = np.pi / 2
+
+        psi_top = util.CSS(self.N, phi_test, theta_test)  # top state of the CSS basis
+        psi_front = util.CSS(self.N, theta_test, phi_test)  # front state of the CSS basis
+        #psi_back = util.CSS(self.N, theta_test, np.pi - phi_test)  # back state of the CSS basis
+
+        Z, Y, H_front = util.Husimi_front(self.N, psi_front, self.ngrid, self.ngrid)
+        Z, Y, H_top = util.Husimi_top(self.N, psi_top, self.ngrid, self.ngrid)
+
+        #Z, Y, H_back = util.Husimi_back(self.N, psi_back, self.ngrid, self.ngrid)
+        diff = H_front - H_top
         assert np.allclose(diff, 0, atol=1e-10)

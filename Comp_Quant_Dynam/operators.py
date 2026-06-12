@@ -230,3 +230,34 @@ def sigma_z_sparse():
     """
 
     return sparse.csr_array([[-1, 0], [0, 1]])
+
+
+##################### Solution sheet 8 ####################
+
+
+def build_single_spin_ops_sparse(N):
+    """
+    Returns the single-site spin operators Sx, Sy, and Sz for a system of `N` spin-1/2 particles as sparse matrices.
+    The single-site spin operators are defined as:
+    sx^i = sigma_x^i / 2
+    sy^i = sigma_y^i / 2
+    sz^i = sigma_z^i / 2
+    where sigma_x^i, sigma_y^i, and sigma_z^i are the single-site Pauli operators acting on the i-th particle.
+    The function returns three lists sxi, syi, and szi, where sxi[i], syi[i], and szi[i] are sx^i, sy^i, and sz^i, respectively, represented as sparse matrices acting on the full Hilbert space of the system.
+    """
+
+    sxSp = sigma_x_sparse() / 2
+    sySp = sigma_y_sparse() / 2
+    szSp = sigma_z_sparse() / 2
+    
+    dims = [2] * N # local dimensions for each spin-1/2 particle
+
+    sxi=[]
+    syi=[]
+    szi=[]
+    for i in range(N):
+        sxi.append(n_party_op_sparse(dims, i, sxSp))
+        syi.append(n_party_op_sparse(dims, i, sySp))
+        szi.append(n_party_op_sparse(dims, i, szSp))
+
+    return sxi, syi, szi

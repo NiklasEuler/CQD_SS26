@@ -340,7 +340,8 @@ def entanglement_entropy(rho):
     where p_i are the eigenvalues of rho. The function first computes the eigenvalues of rho, then filters out any eigenvalues that are zero (or very close to zero) to avoid issues with the logarithm, and finally computes the entropy using the formula above.
     """
     ps = get_evals(rho)
-    ps = ps[np.nonzero(np.around(ps, 10))]
+    # Numerical noise can produce tiny negative eigenvalues; exclude non-positive values.
+    ps = ps[ps > 1e-12]
     return -np.sum(ps * np.log2(ps))
 
 def trace_half_collective(psi):

@@ -1,4 +1,5 @@
 import numpy as np   # standard numerics library
+from numpy import linalg as LA
 from collections.abc import Iterable, Sequence
 from numpy import pi, sin, cos, tan, arcsin, arccos, arctan, sqrt, exp
 from scipy.special import factorial, binom
@@ -299,3 +300,62 @@ def Husimi_top(N, psi, nx, ny):
                 mask[idx_x, idx_y] = False
     H = np.ma.array(H, mask=mask)
     return X, Y, H
+
+
+##################### Solution sheet 8 ###################
+
+
+def partial_trace(psi, M):
+    """
+    Computes the reduced density matrix obtained by tracing out `M` spins from a pure state `psi` of `N` spins.
+    The basis ordering is assumed to be |0...00>, |0...01>, ..., |1...11>, where last spin corresponds to the least significant bit.
+    The last (rightmost) `M` spins are traced out, and the resulting reduced density matrix has dimension 2^(N-M) x 2^(N-M).
+    """
+
+    N = int(np.log2(len(psi)))
+    assert 1 <= M < N, "M must be between 1 and N-1"
+    dim_red = 2 ** (N - M)
+    dim_trace = 2 ** M
+    rho_red = np.zeros((dim_red, dim_red), dtype=complex)
+    for i in range(dim_red):
+        for j in range(i, dim_red):
+            rho_red[i,j] = psi[range(i * dim_trace, (i + 1) * dim_trace)].T @ psi[range(j * dim_trace, (j + 1) * dim_trace)].conj()
+    rho_red = rho_red + rho_red.T.conj() - np.diag(np.diag(rho_red)) # make it Hermitian
+    return rho_red
+
+def get_evals(rho):
+    """
+    Computes the eigenvalues of a density matrix `rho` and returns them in descending order.
+    Used to compute the entanglement spectrum of a reduced density matrix, which is the set of eigenvalues of the reduced density matrix obtained by tracing out part of a pure state.
+    """
+
+    evals = LA.eigvalsh(rho)
+    return np.flip(evals) # eigh returns eigenvalues sorted in ascending order, so need to reverse list
+
+def entanglement_entropy(rho):
+    """
+    Computes the von Neumann entanglement entropy of a density matrix `rho`.
+    The von Neumann entropy is defined as:
+    S = -Tr(rho log2(rho)) = -sum_i p_i log2(p_i)
+    where p_i are the eigenvalues of rho. The function first computes the eigenvalues of rho, then filters out any eigenvalues that are zero (or very close to zero) to avoid issues with the logarithm, and finally computes the entropy using the formula above.
+    """
+    ps = get_evals(rho)
+    # Numerical noise can produce tiny negative eigenvalues; exclude non-positive values.
+    ps = ps[ps > 1e-12]
+    return -np.sum(ps * np.log2(ps))
+
+def trace_half_collective(psi):
+    """
+    Computes the reduced density matrix obtained by tracing out half of the spins from a pure collective spin state `psi` of `N` spins, where `N` is the total number of spins in the system.
+    The basis is assumed to be the Dicke basis, where the state |n> corresponds to n excitations (spin up) and N-n non-excitations (spin down).
+    """
+    
+    N = len(psi) - 1
+    rho = psi.conj().reshape(1 , N + 1) * psi.reshape(N + 1, 1)
+    rho_red = np.zeros((int(N / 2) + 1, int(N / 2) + 1), dtype=complex)
+    pvec = np.arange(N / 2 + 1, dtype=int)
+    for i in range(len(rho_red)):
+        for j in range(len(rho_red)):
+            coeff = np.sqrt(binom(N / 2, i) * binom(N / 2, j))
+            rho_red[i,j] = coeff * np.sum(rho[i + pvec, j + pvec] * binom(N / 2, pvec) / np.sqrt(binom(N, i + pvec) * binom(N, j + pvec)))
+    return rho_red

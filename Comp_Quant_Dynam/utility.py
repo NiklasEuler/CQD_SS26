@@ -308,8 +308,8 @@ def Husimi_top(N, psi, nx, ny):
 def partial_trace(psi, M):
     """
     Computes the reduced density matrix obtained by tracing out `M` spins from a pure state `psi` of `N` spins.
-    The basis ordering is assumed to be |0...00>, |0...01>, ..., |1...11>, where the first spin corresponds to the least significant bit.
-    The rightmost `M` spins are traced out, and the resulting reduced density matrix has dimension 2^(N-M) x 2^(N-M).
+    The basis ordering is assumed to be |0...00>, |0...01>, ..., |1...11>, where last spin corresponds to the least significant bit.
+    The last (rightmost) `M` spins are traced out, and the resulting reduced density matrix has dimension 2^(N-M) x 2^(N-M).
     """
 
     N = int(np.log2(len(psi)))

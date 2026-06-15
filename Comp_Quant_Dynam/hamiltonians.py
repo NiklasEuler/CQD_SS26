@@ -349,7 +349,7 @@ def E_TFIM_individual_exact(N, B):
     E_exact = - sum_k sqrt(1 + B^2 + 2 * B * cos(2 * pi * k / N))
     where the sum is taken over the momentum modes k = -(N-1)/2, ..., (N-1)/2.
     """
-    
+    assert N % 2 == 0, "The exact solution for the ground state energy of the TFIM is only implemented for even N"
     cosine_term = 2 * B * np.cos(2 * np.pi / N * np.arange(-(N - 1) / 2, (N - 1) / 2 + 1, 1))
     E_exact = -np.sum(np.sqrt(1 + B ** 2 + cosine_term)) # analytical ground state energy
     return E_exact
@@ -366,8 +366,8 @@ def build_H_TFIM_A2A(N, B):
     sxis, syis, szis = ops.build_single_spin_ops_sparse(N)
     H_mat = sparse.csr_matrix((dim_global, dim_global))
     for i in range(N):
-        for j in range(i, N):
-            H_mat -= (szis[i] @ szis[j] + szis[j] @ szis[i]) / N # interaction term
+        for j in range(N):
+            H_mat -= szis[i] @ szis[j] / N # interaction term
         H_mat -= B * sxis[i] # field term
     #H_mat = H_mat + H_mat.T - sparse.diags(H_mat.diagonal()) # make it Hermitian
     return H_mat

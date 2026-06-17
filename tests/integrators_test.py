@@ -12,7 +12,7 @@ import Comp_Quant_Dynam.operators as ops
 import Comp_Quant_Dynam.integrators as integrators
 
 
-###################### Exercise sheet 6 #####################
+###################### Exercise sheet 6 ######################
 
 class Test_integrate_ODE:
     
@@ -60,7 +60,9 @@ class Test_integrate_ODE:
         pytest.warns(UserWarning, integrators.integrate_ODE, stepper_func, obsv_vec, H, state, tvec, int_steps_per_dtout=10, stepper_args=None)
 
         
-###################### Solution sheet 6 #####################
+###################### Solution sheet 6 ######################
+
+
 class Test_integrate_ODE_contd:
 
     N = 4
@@ -126,7 +128,8 @@ class Test_integrate_ODE_contd:
         assert np.allclose(self.observables_ED, observables_int, atol = 1e-6)
 
 
-###################### Solution sheet 7 #####################
+###################### Solution sheet 7 ######################
+
 
 class Test_TWA_ED:
 

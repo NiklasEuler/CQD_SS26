@@ -17,7 +17,8 @@ class Test_example_function:
         assert np.allclose(result[0], result[1])
 
 
-#################### Solution sheet 2 ######################
+###################### Solution sheet 2 ######################
+
 
 class Test_create_xvals:
 
@@ -47,6 +48,7 @@ class Test_create_xvals:
 
 
 ###################### Solution sheet 3 ######################
+
 
 class Test_FT_iFT:
 
@@ -139,6 +141,7 @@ class Test_idx2state_state2idx:
 
 ###################### Solution sheet 4 ######################
 
+
 class Test_create_coherent_state:
 
     N = 100
@@ -216,6 +219,7 @@ class Test_expectation_value:
 
 
 ###################### Exercise sheet 7 ######################
+
 
 class Test_Husimi_proj:
 
@@ -304,6 +308,7 @@ class Test_Husimi_proj:
     
 
 ###################### Exercise sheet 8 ######################
+
 
 class Test_partial_trace:
 

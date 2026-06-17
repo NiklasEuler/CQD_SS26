@@ -7,8 +7,7 @@ import Comp_Quant_Dynam.operators as ops
 import pytest
 
 
-#################### Solution sheet 2 ####################
-
+#################### Solution sheet 2 #####################
 
 class Test_init_coeffs_eigenbasis:
 
@@ -51,8 +50,7 @@ class Test_t_evol_eigenbasis:
         assert np.isclose(np.abs(overlap), 1) # check that the evolved state is approximately the expected state in the computational basis, up to a global phase
 
     
-#################### Solution sheet 3 ####################
-
+#################### Solution sheet 3 #####################
 
 
 class Test_t_evol_split_step_fourier:
@@ -86,8 +84,7 @@ class Test_t_evol_split_step_fourier:
         assert np.isclose(np.abs(overlap), 1) # check that the state approximately returns to itself after one period of the harmonic oscillator, up to a global phase
 
     
-#################### Exercise sheet 6 ####################
-
+#################### Exercise sheet 6 #####################
 
 class Test_calc_expv_ED:
     

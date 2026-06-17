@@ -17,8 +17,7 @@ class Test_example_function:
         assert np.allclose(result[0], result[1])
 
 
-#################### Solution sheet 2 ####################
-
+#################### Solution sheet 2 ######################
 
 class Test_create_xvals:
 
@@ -47,8 +46,7 @@ class Test_create_xvals:
         assert np.isclose(xvals[self.npoints // 2], 0) # check that the middle point is approximately zero
 
 
-##################### Solution sheet 3 ####################
-
+###################### Solution sheet 3 ######################
 
 class Test_FT_iFT:
 
@@ -139,8 +137,7 @@ class Test_idx2state_state2idx:
         assert state == [2, 3]
 
 
-##################### Solution sheet 4 ####################
-
+###################### Solution sheet 4 ######################
 
 class Test_create_coherent_state:
 
@@ -218,8 +215,7 @@ class Test_expectation_value:
         assert np.allclose(exp_val_norm, expected, atol=1e-4)
 
 
-##################### Exercise sheet 7 ###################
-
+###################### Exercise sheet 7 ######################
 
 class Test_Husimi_proj:
 
@@ -306,3 +302,47 @@ class Test_Husimi_proj:
         diff = H1 - np.flip(H2, axis=0) # flip H2 along the z axis
         assert np.allclose(diff, 0, atol=1e-10)
     
+
+###################### Exercise sheet 8 ######################
+
+class Test_partial_trace:
+
+    def test_partial_trace_product(self):
+        N = 3
+        psi_full = np.eye(1, 2 ** N, 5)[0] # |101> state in the full Hilbert space
+        rho_reduced = util.partial_trace(psi_full, 1) # trace out the last spin
+        expected_psi = np.eye(1, 2 ** (N - 1), 2)[0] # |10> state in the reduced Hilbert space
+        expected_rho = np.outer(expected_psi, expected_psi.conj())
+        assert np.allclose(rho_reduced, expected_rho)
+
+    def test_partial_trace_entangled(self):
+        N = 3
+        psi_ghz = (1 / np.sqrt(2)) * (np.eye(1, 2 ** N, 0)[0] + np.eye(1, 2 ** N, 7)[0]) # GHZ state in the full Hilbert space
+        rho_reduced = util.partial_trace(psi_ghz, 2) # trace out the last two spins
+        expected_rho = 0.5 * np.eye(2) # reduced density matrix for the first spin, which is maximally mixed
+        assert np.allclose(rho_reduced, expected_rho)
+
+class Test_entanglement_entropy:
+
+    def test_entanglement_entropy_product(self):
+        N = 3
+        psi_full = np.eye(1, 2 ** N, 5)[0] # |101> state in the full Hilbert space
+        rho_reduced = util.partial_trace(psi_full, 1) # trace out the last spin
+        S = util.entanglement_entropy(rho_reduced) # trace out the last spin
+        expected_S = 0.0 # product state should have zero entanglement entropy
+        assert np.isclose(S, expected_S)
+
+    def test_entanglement_entropy_entangled(self):
+        N = 3
+        psi_ghz = (1 / np.sqrt(2)) * (np.eye(1, 2 ** N, 0)[0] + np.eye(1, 2 ** N, 7)[0]) # GHZ state in the full Hilbert space
+        rho_reduced = util.partial_trace(psi_ghz, 1) # trace out the last two spins
+        S = util.entanglement_entropy(rho_reduced) # trace out the last two spins
+        expected_S = 1 # reduced density matrix for the first spin is maximally mixed, so S should be log(2)
+        assert np.isclose(S, expected_S)
+        
+    def test_entanglement_entropy_mixed_state(self):
+        # test that the entanglement entropy of a mixed state is non-negative
+        rho = np.diag([1/3, 2/3]) # maximally mixed state for a single qubit
+        S = util.entanglement_entropy(rho)
+        S_expected = 1/3 * np.log2(3) +  2/3 * np.log2(3 / 2)
+        assert np.isclose(S, S_expected)

@@ -10,8 +10,7 @@ import Comp_Quant_Dynam.operators as ops
 from Comp_Quant_Dynam.utility import create_xvals
 
 
-#################### Solution sheet 1 ####################
-
+#################### Solution sheet 1 #####################
 class Test_HO_eigenstates_exact:
 
     L = 10
@@ -45,8 +44,7 @@ class Test_HO_eigenenergies:
         evals_exact = ham.HO_eigenenergies_exact(np.arange(evals_num.size))
         assert np.allclose(evals_num[:10], evals_exact[:10], atol=self.acc)
 
-#################### Solution sheet 2 ####################
-
+#################### Solution sheet 2 #####################
 class Test_HO_sparse_eigenenergies:
     
     L = 15
@@ -76,8 +74,7 @@ class Test_HO_sparse_eigenenergies:
         assert np.allclose(np.abs(overlaps), 1) # check that the eigenvectors are approximately the same, up to a global phase
 
 
-#################### Solution sheet 3 ####################
-
+#################### Solution sheet 3 #####################
 
 class Test_potentials:
     L = 2
@@ -100,8 +97,7 @@ class Test_potentials:
         assert np.allclose(expected, result)
 
 
-##################### Exercise sheet 4 ####################
-
+###################### Exercise sheet 4 #####################
 
 class Test_build_H_coupled_HO_man:
     N1 = 10
@@ -280,8 +276,7 @@ class Test_coupled_HO_potential:
         assert np.allclose(self.H_pot.diagonal(), expected_no_coupling.diagonal()) # the coupling term should not contribute to the diagonal elements of the potential
 
 
-##################### Solution sheet 5 ####################
-
+###################### Solution sheet 5 #####################
 
 class Test_build_H_TFIM:
 
@@ -367,8 +362,7 @@ class Test_build_H_TFIM_symm:
         assert np.allclose(probs_GS, probs_expected, atol=1e-6) # check that the ground state is approximately equal to the expected ground state, which is an equal superposition of all computational basis states
 
 
-##################### Solution sheet 7 ####################
-
+###################### Solution sheet 7 #####################
 class Test_TFIM_E_MF:
     
     z = np.arange(-1, 1.01, 0.01)

@@ -14,8 +14,7 @@ def example_func(x):
     return 1 / pi ** (1 / 4) * exp(-x ** 2 / 2)
 
 
-#################### Solution sheet 2 ####################
-
+###################### Solution sheet 2 ######################
 
 def create_xvals(L, npoints, endpoint=True):
     """
@@ -28,8 +27,7 @@ def create_xvals(L, npoints, endpoint=True):
     return xvals, dx
 
 
-#################### Solution sheet 3 ####################
-
+###################### Solution sheet 3 ######################
 
 def FT(psi, x, k):
     """
@@ -64,8 +62,7 @@ def create_tvecs(tsteps, dt):
     return np.linspace(0, tsteps * dt, tsteps + 1) # will have length tsteps + 1
 
 
-##################### Exercise sheet 4 ###################
-
+###################### Exercise sheet 4 ######################
 def idx2state(N1, N2, i):
     """
     Converts a single index `i` to a 'state' in the product Hilbert space |n1, n2> of dimension N1 x N2.
@@ -89,8 +86,7 @@ def state2idx(N1, N2, state):
     return i
     
 
-##################### Solution sheet 4 ###################
-
+###################### Solution sheet 4 ######################
 def create_coherent_state(N, alpha):
     """
     Creates a coherent state |alpha> in the Fock basis of dimension `N` with complex amplitude `alpha`.
@@ -135,8 +131,7 @@ def _check_if_sized(obsv_vec):
     return n_obsv, obsv_vec
 
 
-##################### Exercise sheet 7 ###################
-
+###################### Exercise sheet 7 ######################
 
 def CSS(N, theta, phi):
     """
@@ -302,8 +297,7 @@ def Husimi_top(N, psi, nx, ny):
     return X, Y, H
 
 
-##################### Solution sheet 8 ###################
-
+###################### Solution sheet 8 ######################
 
 def partial_trace(psi, M):
     """

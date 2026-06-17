@@ -2,8 +2,7 @@ import numpy as np
 from scipy import sparse
 
 
-##################### Solution sheet 4 ####################
-
+###################### Solution sheet 4 ######################
 
 def diagonal_op_sparse(arr, offsets = 0):
     """
@@ -96,8 +95,7 @@ def n_proj_operator_sparse(local_dims, idx, n):
     return projector_full
 
 
-##################### Solution sheet 5 ####################
-
+###################### Solution sheet 5 ######################
 
 def Sx_sparse(N):
     """
@@ -232,8 +230,7 @@ def sigma_z_sparse():
     return sparse.csr_array([[-1, 0], [0, 1]])
 
 
-##################### Solution sheet 8 ####################
-
+###################### Solution sheet 8 ######################
 
 def build_single_spin_ops_sparse(N):
     """

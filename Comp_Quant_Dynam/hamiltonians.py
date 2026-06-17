@@ -6,8 +6,8 @@ import scipy.sparse as sparse # routines for sparse matrices
 from Comp_Quant_Dynam.utility import state2idx, idx2state
 from Comp_Quant_Dynam.operators import diagonal_op_sparse, n_party_op_sparse, x_operator_sparse, Sx_sparse, Sz_sparse, Sx_symm, Sz2_symm
 import Comp_Quant_Dynam.operators as ops
-#################### Solution sheet 1 ####################
 
+###################### Solution sheet 1 ######################
 
 def HO_eigenstates_exact(n, x):
     """
@@ -49,8 +49,7 @@ def HO_potential(x):
     return 0.5 * np.diag(x ** 2)
 
 
-#################### Solution sheet 2 ####################
-
+###################### Solution sheet 2 ######################
 
 def H_kinetic_sparse(x):
     """
@@ -80,8 +79,7 @@ def HO_potential_sparse(x):
     return sparse.diags_array(0.5 * x ** 2)
 
 
-#################### Solution sheet 3 ####################
-
+###################### Solution sheet 3 ######################
 
 def step_potential(x, V0):
     """
@@ -100,8 +98,7 @@ def barrier_potential(x, V0, width):
     return potential
 
 
-##################### Exercise sheet 4 ####################
-
+###################### Exercise sheet 4 ######################
 
 def build_H_coupled_HO_man(N1, N2, lam):
     """
@@ -182,8 +179,7 @@ def build_H_coupled_HO_man(N1, N2, lam):
     return H
 
 
-##################### Solution sheet 4 ####################
-
+###################### Solution sheet 4 ######################
 
 def coupled_HO_potential(x, y, lam):
     """
@@ -275,8 +271,7 @@ def HO_product_eigenstates(N1, N2, xgrid):
     return basis_state_pos
 
 
-##################### Solution sheet 5 ####################
-
+###################### Solution sheet 5 ######################
 
 def build_H_TFIM(N, ome):
     """
@@ -305,8 +300,7 @@ def build_H_TFIM_symm(N, ome):
     return H_symm
     
 
-##################### Solution sheet 7 ####################
-
+###################### Solution sheet 7 ######################
 
 def E_MF(z, phi, omega):
     """
@@ -320,8 +314,7 @@ def E_MF(z, phi, omega):
     return -z ** 2 / 2 - omega * np.sqrt(r2) * np.cos(phi)
 
 
-##################### Solution sheet 8 ####################
-
+###################### Solution sheet 8 ######################
 
 def build_H_TFIM_individual(N, ome):
     """

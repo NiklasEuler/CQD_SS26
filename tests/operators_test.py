@@ -7,8 +7,7 @@ import Comp_Quant_Dynam.unitaries as unitaries
 import Comp_Quant_Dynam.operators as ops
 
 
-##################### Solution sheet 4 ####################
-
+###################### Solution sheet 4 #####################
 
 class Test_ladder_operators:
 
@@ -84,8 +83,7 @@ class Test_n_proj_operator_sparse:
         assert np.allclose(state_2_0_proj_b, 0)
 
 
-##################### Solution sheet 5 ####################
-
+###################### Solution sheet 5 ######################
 
 class Test_Sx_Sy_Sz_sparse:
     
@@ -173,4 +171,42 @@ class Test_sigma_x_y_z_sparse:
     def test_sigma_x_y_commutation(self):
         commutator = self.sigma_x_op @ self.sigma_y_op - self.sigma_y_op @ self.sigma_x_op
         diff = commutator - 2j * self.sigma_z_op
+        assert np.allclose(diff.data, 0)
+
+    
+###################### Solution sheet 8 ######################
+
+
+class Test_build_single_spin_ops_sparse:
+
+    N = 5
+    local_dims = [2] * N
+    sxi, syi, szi = ops.build_single_spin_ops_sparse(N)
+
+
+    def test_sxi(self):
+        i = 0
+        sx_i = self.sxi[i]
+        sx = ops.sigma_x_sparse() / 2
+        # construct the expected operator by hand
+        expected_sx_i = ops.n_party_op_sparse(self.local_dims, i, sx)
+        diff = sx_i - expected_sx_i
+        assert np.allclose(diff.data, 0)
+
+    def test_syi(self):
+        i = 2
+        sy_i = self.syi[i]
+        sy = ops.sigma_y_sparse() / 2
+        # construct the expected operator by hand
+        expected_sy_i = ops.n_party_op_sparse(self.local_dims, i, sy)
+        diff = sy_i - expected_sy_i
+        assert np.allclose(diff.data, 0)
+
+    def test_szi(self):
+        i = 4
+        sz_i = self.szi[i]
+        sz = ops.sigma_z_sparse() / 2
+        # construct the expected operator by hand
+        expected_sz_i = ops.n_party_op_sparse(self.local_dims, i, sz)
+        diff = sz_i - expected_sz_i
         assert np.allclose(diff.data, 0)

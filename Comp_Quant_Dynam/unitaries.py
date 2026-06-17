@@ -6,8 +6,7 @@ import warnings
 from Comp_Quant_Dynam.utility import expectation_value, _check_if_sized
 
 
-#################### Solution sheet 2 ####################
-
+###################### Solution sheet 2 ######################
 
 def t_evol_eigenbasis(init_coeffs, t, evals, evecs):
     """
@@ -27,8 +26,7 @@ def init_coeffs_eigenbasis(psi0, evecs):
     return np.conjugate(evecs.T) @ psi0
 
 
-#################### Solution sheet 3 ####################
-
+###################### Solution sheet 3 ######################
 
 def t_evol_split_step_fourier(psi0, V_func, tvec, xvals):
     """
@@ -67,8 +65,7 @@ def t_evol_split_step_fourier(psi0, V_func, tvec, xvals):
     return psit
 
 
-#################### Exercise sheet 6 ####################
-
+###################### Exercise sheet 6 ######################
 
 def calc_expv_ED(obsv_vec, H_mat, ini, tvec):
     """

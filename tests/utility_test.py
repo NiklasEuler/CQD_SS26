@@ -347,7 +347,7 @@ class Test_entanglement_entropy:
         
     def test_entanglement_entropy_mixed_state(self):
         # test that the entanglement entropy of a mixed state is non-negative
-        rho = np.diag([1/3, 2/3]) # maximally mixed state for a single qubit
+        rho = np.diag([1/3, 2/3]) # mixed state for a single qubit
         S = util.entanglement_entropy(rho)
         S_expected = 1/3 * np.log2(3) +  2/3 * np.log2(3 / 2)
         assert np.isclose(S, S_expected)

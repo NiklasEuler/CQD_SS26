@@ -413,8 +413,8 @@ class Test_build_H_TFIM_individual:
         ome = 0
         H_indiv = ham.build_H_TFIM_individual(self.N, ome)
         H_diag = H_indiv.diagonal()
-        H_reconstr = H_indiv - ops.diagonal_op_sparse(H_diag)
-        diff = H_reconstr - H_reconstr
+        H_reconstr = ops.diagonal_op_sparse(H_diag)
+        diff = H_indiv - H_reconstr
         assert np.allclose(diff.data, 0) # check that the off-diagonal elements of H are zero when there is no transverse field, which means that the Hamiltonian is diagonal in the computational basis
 
     def test_build_H_TFIM_individual_gs_energy(self):
@@ -452,8 +452,8 @@ class Test_build_H_TFIM_A2A:
         ome = 0
         H_A2A = ham.build_H_TFIM_A2A(self.N, ome)
         H_diag = H_A2A.diagonal()
-        H_reconstr = H_A2A - ops.diagonal_op_sparse(H_diag)
-        diff = H_reconstr - H_reconstr
+        H_reconstr = ops.diagonal_op_sparse(H_diag)
+        diff = H_reconstr - H_A2A
         assert np.allclose(diff.data, 0) # check that the off-diagonal elements of H are zero when there is no transverse field, which means that the Hamiltonian is diagonal in the computational basis
 
     def test_build_H_TFIM_A2A_entropy(self):

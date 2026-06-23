@@ -17,6 +17,9 @@ dependencies = [
     "notebook<7",
     "jupyter_contrib_nbextensions",
     "qutip",
+    "jax",
+    "flax",
+    "optax"
 ]
 
 [project.optional-dependencies]

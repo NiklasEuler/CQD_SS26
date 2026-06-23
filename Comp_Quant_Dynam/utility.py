@@ -346,7 +346,7 @@ def entanglement_entropy_from_evals(evals):
     This function is useful if you already have the eigenvalues of the reduced density matrix and want to compute the entanglement entropy without having to reconstruct the density matrix itself.
     The function filters out any eigenvalues that are zero (or very close to zero) to avoid issues with the logarithm, and then computes the entropy using the formula S = -sum_i p_i log2(p_i).
     """
-
+    evals = np.asarray(evals)
     ps = evals[evals > 1e-12]
     return -np.sum(ps * np.log2(ps))
 
@@ -370,7 +370,7 @@ def trace_half_collective(psi):
 ###################### Solution sheet 9 ######################
 
 
-def n_party_idx2state(idx, local_dim, N):
+def n_party_idx2state_old(idx, local_dim, N):
     """
     Converts a single index `idx` to a 'state' in the product Hilbert space of dimension `local_dim^N`.
     The basis ordering is assumed to be |0...00>, |0...01>, ..., |(local_dim-1)...(local_dim-1)>, where the last spin corresponds to the least significant bit.
@@ -384,3 +384,21 @@ def n_party_idx2state(idx, local_dim, N):
         rest = rest % (local_dim ** (N - i - 1))
     state[N - 1] = 1-rest
     return state
+
+def n_party_idx2state(idx, local_dim, N):
+    """
+    Converts a single index `idx` to a 'state' in the product Hilbert space of dimension `local_dim^N`.
+    The basis ordering is assumed to be |0...00>, |0...01>, ..., |(local_dim-1)...(local_dim-1)>, where the last spin corresponds to the least significant bit.
+    The function returns a state vector of length `N`, where each entry corresponds to the local state of each spin in the product state.
+    """
+    state = np.zeros((N,), dtype='int32')
+    rest = idx
+    for i in range(N - 1):
+        base = local_dim ** (N - i - 1)
+        div = rest // base
+        state[i] = div
+        rest = rest % base
+    state[N - 1] = rest
+
+    
+    return np.int64(-1 * (state - (local_dim - 1) / 2)) # invert 

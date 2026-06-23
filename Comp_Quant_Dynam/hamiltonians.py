@@ -382,7 +382,13 @@ def build_H_AKLT(N, theta=np.arctan(1 / 3), open_bc=False):
     H_mat = sparse.csr_array((local_dim ** N, local_dim ** N))
 
     spSp, smSp, szSp = ops.build_single_spin_1_ops_sparse()
-    
+
+    c0 = np.cos(theta) / 3 / np.cos(theta0)
+    c1 = np.cos(theta) / 2 / np.cos(theta0)
+    c2 = np.sin(theta) / 2 / np.cos(theta0)
+
+    I =  sparse.identity(local_dim ** N)
+
     end_idx = N - 1 if open_bc else N
     for idx in range(end_idx):
         # first build S_i*S_(i+1)
@@ -392,8 +398,8 @@ def build_H_AKLT(N, theta=np.arctan(1 / 3), open_bc=False):
         SiSi_p1 = ops.n_party_op_sparse(local_dims, idxs, [szSp, szSp])
         SiSi_p1 += 1/2 * ops.n_party_op_sparse(local_dims, idxs, [spSp, smSp])
         SiSi_p1 += 1/2 * ops.n_party_op_sparse(local_dims, idxs, [smSp, spSp])
-        H_mat += np.cos(theta) / 3 / np.cos(theta0) * sparse.identity(local_dim ** N)
-        H_mat += np.cos(theta) / 2 / np.cos(theta0) * SiSi_p1 
-        H_mat += np.sin(theta) / 2 / np.cos(theta0) * (SiSi_p1 @ SiSi_p1)
+        H_mat += c1 * SiSi_p1 
+        H_mat += c2 * (SiSi_p1 @ SiSi_p1)
+    H_mat += c0 * I * N
     
     return H_mat

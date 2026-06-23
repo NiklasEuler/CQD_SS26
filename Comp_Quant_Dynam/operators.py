@@ -302,7 +302,7 @@ def build_single_spin_1_ops_sparse():
 
 def get_coeff_MPS(state, a_tensor_arr):
     """
-    Returns the coefficient of the product `state?? |state> in the MPS representation defined by the list of tensors `a_tensor_arr`.
+    Returns the coefficient of the product `state` |state> in the MPS representation defined by the list of tensors `a_tensor_arr`.
     The function expects a `state` vector of the form [s1, s2, ..., sN] with si in {-1, 0, 1}, where si corresponds to the local state of the i-th spin-1 particle.
     The coefficient is calculated by contracting the tensors in the MPS representation.
     """
@@ -316,11 +316,10 @@ def get_coeff_MPS(state, a_tensor_arr):
 def build_E_mat_MPS(a_tensor_arr, op=None):
     """
     Builds the E-matrix for a given list of tensors `A_tensor_list` and a local operator `op`, where each tensor corresponds to a local operator in the MPS representation.
-    On defeault, the identity operator is used, which gives the E-matrix needed for calculating the norm.
+    By default, the identity operator is used, which gives the E-matrix needed for calculating the norm.
     """
     if op is None:
-        op = np.eye(len(a_tensor_arr))
-    op = op.toarray() if sparse.issparse(op) else np.asarray(op)
+        op = sparse.csr_array(sparse.eye_array(len(a_tensor_arr)))
     assert op.shape == (len(a_tensor_arr), len(a_tensor_arr)), "Operator shape must match the number of tensors"
     shape = sparse.kron(a_tensor_arr[0], a_tensor_arr[0].conjugate()).shape
     E_op_mat = np.zeros(shape, dtype='complex')
@@ -335,6 +334,8 @@ def corr_func_MPS(N, E_mat, idxs, E_op_arr):
     """
     Computes the expectation value of a the correlation function for a given list of local E-operators `E_op_arr` at the specified indices `idxs` in a system of size `N`, using the E-matrix `E_mat` for all other sites.
     """
+    idxs = np.asarray(idxs)
+    E_op_arr = np.asarray(E_op_arr)
     asort = np.argsort(idxs)
     idxs = idxs[asort]
     E_op_arr = E_op_arr[asort]

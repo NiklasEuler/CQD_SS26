@@ -375,7 +375,7 @@ def trace_half_collective(psi):
 def n_party_idx2state(idx, local_dim, N):
     """
     Converts a single index `idx` to a 'state' in the product Hilbert space of dimension `local_dim^N`.
-    The last spin corresponds to the least significant bit.
+    The basis ordering is assumed to be |-k,-k,...,-k>, |-k,-k,...,-k+1>, ..., |k,k,...,k>, where k = (local_dim - 1) / 2, and the last spin corresponds to the least significant bit. 
     The function returns a state vector of length `N`, where each entry corresponds to the local state of each spin in the product state.
     """
     state = np.zeros((N,), dtype='int32')

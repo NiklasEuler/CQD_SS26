@@ -83,6 +83,29 @@ class Test_n_proj_operator_sparse:
         assert np.allclose(state_2_0_proj_b, 0)
 
 
+class Test_n_party_op_sparse:
+
+    local_dims = [4, 5, 6, 5, 4, 3]
+
+    x1 = ops.x_operator_sparse(local_dims[0])
+    p2 = ops.p_operator_sparse(local_dims[2])
+    n3 = ops.n_operator_sparse(local_dims[4])
+    
+    x1_p2_n3 = ops.n_party_op_sparse(local_dims, [0, 2, 4], [x1, p2, n3])
+
+
+    def test_n_party_op_sparse(self):
+        # construct the expected operator by hand
+        expected_x1_p2_n3 = ops.n_party_op_sparse(self.local_dims, 0, self.x1) @ ops.n_party_op_sparse(self.local_dims, 2, self.p2) @ ops.n_party_op_sparse(self.local_dims, 4, self.n3)
+        diff = self.x1_p2_n3 - expected_x1_p2_n3
+        assert np.allclose(diff.data, 0)
+
+    def test_n_party_op_sparse_man(self):
+        # construct the expected operator by hand
+        expected_x1_p2_n3 = sparse.kron(sparse.kron(sparse.kron(sparse.kron(sparse.kron(self.x1, sparse.eye_array(self.local_dims[1])), self.p2), sparse.eye_array(self.local_dims[3])), self.n3), sparse.eye_array(self.local_dims[5]))
+        diff = self.x1_p2_n3 - expected_x1_p2_n3
+        assert np.allclose(diff.data, 0)
+
 ###################### Solution sheet 5 ######################
 
 class Test_Sx_Sy_Sz_sparse:

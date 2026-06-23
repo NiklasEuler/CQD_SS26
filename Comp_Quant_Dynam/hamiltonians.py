@@ -364,3 +364,42 @@ def build_H_TFIM_A2A(N, B):
         H_mat -= B * sxis[i] # field term
     #H_mat = H_mat + H_mat.T - sparse.diags(H_mat.diagonal()) # make it Hermitian
     return H_mat
+
+
+###################### Solution sheet 9 ######################
+
+
+def build_H_AKLT(N, theta=np.arctan(1 / 3), open_bc=False):
+    """
+    Builds the Hamiltonian matrix for the AKLT model for `N` spin-1 particles and angle `theta` as a sparse matrix.
+    The Hamiltonian is given by:
+    H = sum_i (cos(theta) / (3 * cos(theta0)) + cos(theta) / (2 * cos(theta0)) * S_i * S_{i+1} + sin(theta) / (2 * cos(theta0)) * (S_i * S_{i+1})^2)
+    where S_i is the spin-1 operator acting on the i-th particle, and we assume periodic boundary conditions if `open_bc` is False, and open boundary conditions if `open_bc` is True.
+    """
+    theta0 = np.arctan(1  / 3)
+    local_dim = 3
+    local_dims = [local_dim] * N
+    H_mat = sparse.csr_array((local_dim ** N, local_dim ** N))
+
+    spSp, smSp, szSp = ops.build_single_spin_1_ops_sparse()
+
+    c0 = np.cos(theta) / 3 / np.cos(theta0)
+    c1 = np.cos(theta) / 2 / np.cos(theta0)
+    c2 = np.sin(theta) / 2 / np.cos(theta0)
+
+    I =  sparse.identity(local_dim ** N)
+
+    end_idx = N - 1 if open_bc else N
+    for idx in range(end_idx):
+        # first build S_i*S_(i+1)
+       
+        next_idx = np.mod(idx + 1, N)
+        idxs = [idx, next_idx]
+        SiSi_p1 = ops.n_party_op_sparse(local_dims, idxs, [szSp, szSp])
+        SiSi_p1 += 1/2 * ops.n_party_op_sparse(local_dims, idxs, [spSp, smSp])
+        SiSi_p1 += 1/2 * ops.n_party_op_sparse(local_dims, idxs, [smSp, spSp])
+        H_mat += c1 * SiSi_p1 
+        H_mat += c2 * (SiSi_p1 @ SiSi_p1)
+    H_mat += c0 * I * N
+    
+    return H_mat

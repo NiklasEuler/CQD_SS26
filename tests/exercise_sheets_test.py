@@ -258,3 +258,25 @@ class Test_exercise_sheets:
                 check=True,
                 env={**os.environ, "MPLBACKEND": "Agg", "PYTHONIOENCODING": "utf-8"},
             )  # Check that exercise8_sol.ipynb runs without errors.
+
+    def test_exercise_solution_9(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            subprocess.run(
+                [
+                    "jupyter",
+                    "nbconvert",
+                    "--to",
+                    "script",
+                    "--output",
+                    "exercise9_sol",
+                    "--output-dir",
+                    temp_dir,
+                    "Solutions/exercise9_sol.ipynb",
+                ],
+                check=True,
+            )
+            subprocess.run(
+                [sys.executable, "-m", "IPython", f"{temp_dir}/exercise9_sol.py"],
+                check=True,
+                env={**os.environ, "MPLBACKEND": "Agg", "PYTHONIOENCODING": "utf-8"},
+            )  # Check that exercise9_sol.ipynb runs without errors.

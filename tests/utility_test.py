@@ -351,3 +351,37 @@ class Test_entanglement_entropy:
         S = util.entanglement_entropy(rho)
         S_expected = 1/3 * np.log2(3) +  2/3 * np.log2(3 / 2)
         assert np.isclose(S, S_expected)
+
+
+###################### Exercise sheet 9 ######################
+
+class Test_n_party_idx2state:
+
+    def test_n_party_idx2state_first_state(self):
+        # Test edge cases for n_party_idx2state
+        N = 6
+        local_dim = 3
+        
+        idx = 0
+        expected_state = [-1] * N
+        state = util.n_party_idx2state(idx, local_dim, N)
+        assert np.allclose(state, expected_state)
+    
+    def test_n_party_idx2state_last_state(self):
+        N = 6
+        local_dim = 3
+        
+        idx = local_dim ** N - 1
+        expected_state = [1] * N
+        state = util.n_party_idx2state(idx, local_dim, N)
+        assert np.allclose(state, expected_state)
+
+    def test_n_party_idx2state_middle_state(self):
+        N = 6
+        local_dim = 3
+        
+        idx = 11 # corresponds to state [-1, -1, -1, 0, -1, 1]
+        expected_state = [-1, -1, -1, 0, -1, 1]
+        state = util.n_party_idx2state(idx, local_dim, N)
+        assert np.allclose(state, expected_state)
+

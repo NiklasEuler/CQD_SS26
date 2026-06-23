@@ -1,6 +1,8 @@
 import numpy as np
 import numpy.linalg as LA
 import scipy.sparse as sparse
+from scipy.sparse.linalg import eigsh
+
 import Comp_Quant_Dynam.hamiltonians as ham
 import Comp_Quant_Dynam.utility as util
 import Comp_Quant_Dynam.unitaries as unitaries
@@ -292,7 +294,7 @@ class Test_build_E_mat_MPS:
         sig_p = (sig_x + 1j * sig_y).real / 2
         sig_m = sig_p.T
 
-        a_tensor_arr = np.array([np.sqrt(2 / 3) * sig_p, -np.sqrt(1 / 3) * sig_z, -np.sqrt(2 / 3) * sig_m])
+        a_tensor_arr = np.array([-np.sqrt(2 / 3) * sig_m, -np.sqrt(1 / 3) * sig_z, np.sqrt(2 / 3) * sig_p])
 
         E = ops.build_E_mat_MPS(a_tensor_arr)
         # The largest eigenvalue of E should be 1 for a properly normalized MPS
@@ -320,7 +322,8 @@ class Test_build_correlation_function:
         
 
 
-        a_tensor_arr = np.array([np.sqrt(2 / 3) * sig_p, -np.sqrt(1 / 3) * sig_z, -np.sqrt(2 / 3) * sig_m])
+        a_tensor_arr = np.array([-np.sqrt(2 / 3) * sig_m, -np.sqrt(1 / 3) * sig_z, np.sqrt(2 / 3) * sig_p])
+
         
         E_mat = ops.build_E_mat_MPS(a_tensor_arr).real
         Ez_mat = ops.build_E_mat_MPS(a_tensor_arr, sz_sprs).real
@@ -339,5 +342,30 @@ class Test_build_correlation_function:
         assert np.allclose(string_corr_list_diff, 0, atol=1e-12)
 
         
+class Test_get_coeff_MPS:
+    sig_x = ops.sigma_x_sparse()
+    sig_y = ops.sigma_y_sparse()
+    sig_z = ops.sigma_z_sparse()
 
+    sig_p = (sig_x + 1j * sig_y).real / 2
+    sig_m = sig_p.T
 
+    a_tensor_arr = np.array([-np.sqrt(2 / 3) * sig_m, -np.sqrt(1 / 3) * sig_z, np.sqrt(2 / 3) * sig_p])
+    
+    def test_get_coeff_MPS_AKLT(self):
+        N = 9
+        local_dim = 3
+        global_dim = local_dim ** N
+        H_mat = ham.build_H_AKLT(N)
+        evals, evecs = eigsh(H_mat, k=1, which='SA')
+
+        coeffs_mps = np.zeros((global_dim,), dtype=np.complex128)
+        for idx in range(global_dim):
+            state = util.n_party_idx2state(idx, local_dim, N)
+            coeffs_mps[idx] = ops.get_coeff_MPS(state, self.a_tensor_arr)
+
+        coeffs_mps /= np.linalg.norm(coeffs_mps)
+        
+        overlap = np.abs(np.vdot(evecs[:, 0], coeffs_mps)) ** 2
+
+        assert np.isclose(overlap, 1.0, atol=1e-6)

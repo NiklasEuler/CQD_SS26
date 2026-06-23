@@ -388,7 +388,7 @@ def n_party_idx2state(idx, local_dim, N):
     state[N - 1] = rest
 
     
-    return np.int64(-1 * (state - (local_dim - 1) / 2)) # invert 
+    return np.int64((state - (local_dim - 1) / 2)) # invert #-1 * 
 
 
 ###################### Solution sheet 10 ######################

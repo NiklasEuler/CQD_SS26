@@ -233,3 +233,111 @@ class Test_build_single_spin_ops_sparse:
         expected_sz_i = ops.n_party_op_sparse(self.local_dims, i, sz)
         diff = sz_i - expected_sz_i
         assert np.allclose(diff.data, 0)
+
+
+###################### Solution sheet 9 ######################
+
+
+class Test_build_single_spin_1_ops_sparse:
+
+    sp_sprs, sm_sprs, sz_sprs = ops.build_single_spin_1_ops_sparse()
+
+    sx_sprs = (sp_sprs + sm_sprs) / 2
+    sy_sprs = (sp_sprs - sm_sprs) / (2j)
+    print("sx = ", sx_sprs.toarray())
+    print("sy = ", sy_sprs.toarray())
+
+    def test_trace(self):
+        assert np.isclose(self.sp_sprs.trace(), 0)
+        assert np.isclose(self.sm_sprs.trace(), 0)
+        assert np.isclose(self.sz_sprs.trace(), 0)
+
+    def test_hermiticity(self):
+        assert np.allclose(self.sp_sprs.data, self.sm_sprs.conj().T.data)
+        assert np.allclose(self.sz_sprs.data, self.sz_sprs.conj().T.data)
+
+    def test_commutation_xy(self):
+        commutator = self.sx_sprs @ self.sy_sprs - self.sy_sprs @ self.sx_sprs
+        diff = commutator - 1j * self.sz_sprs
+        assert np.allclose(diff.data, 0)
+
+    def test_commutation_yz(self):
+        commutator = self.sy_sprs @ self.sz_sprs - self.sz_sprs @ self.sy_sprs
+        diff = commutator - 1j * self.sx_sprs
+        assert np.allclose(diff.data, 0)
+
+    def test_commutation_zx(self):
+        commutator = self.sz_sprs @ self.sx_sprs - self.sx_sprs @ self.sz_sprs
+        diff = commutator - 1j * self.sy_sprs
+        assert np.allclose(diff.data, 0)
+
+class Test_build_E_mat_MPS:
+
+    def test_build_E_mat_MPS(self):
+        # Test the build_E_mat_MPS function with a simple example
+        A = np.array([[1, 0], [0, 1]])
+        B = np.array([[0, 1], [1, 0]])
+        E = ops.build_E_mat_MPS([A, B])
+        expected_E = np.eye(4) + np.fliplr(np.eye(4))
+        print("E = ", E)
+        print("expected_E = ", expected_E)
+        assert np.allclose(E, expected_E)
+
+    def test_build_E_mat_MPS_convergence(self):
+
+        sig_x = ops.sigma_x_sparse()
+        sig_y = ops.sigma_y_sparse()
+        sig_z = ops.sigma_z_sparse()
+
+        sig_p = (sig_x + 1j * sig_y).real / 2
+        sig_m = sig_p.T
+
+        a_tensor_arr = np.array([np.sqrt(2 / 3) * sig_p, -np.sqrt(1 / 3) * sig_z, -np.sqrt(2 / 3) * sig_m])
+
+        E = ops.build_E_mat_MPS(a_tensor_arr)
+        # The largest eigenvalue of E should be 1 for a properly normalized MPS
+        largest_eigenvalue = np.max(np.abs(np.linalg.eigvals(E)))
+        assert np.isclose(largest_eigenvalue, 1.0)
+
+        a_tensor_power = np.linalg.matrix_power(E, 1000)
+
+        norm = np.trace(a_tensor_power)
+        assert np.isclose(norm, 1.0)
+
+class Test_build_correlation_function:
+
+   def test_build_correlation_function_hidden_order(self):
+       
+        sig_x = ops.sigma_x_sparse() 
+        sig_y = ops.sigma_y_sparse()
+        sig_z = ops.sigma_z_sparse()
+
+        p_sprs, sm_sprs, sz_sprs = ops.build_single_spin_1_ops_sparse()
+
+
+        sig_p = (sig_x + 1j * sig_y).real / 2
+        sig_m = sig_p.T
+        
+
+
+        a_tensor_arr = np.array([np.sqrt(2 / 3) * sig_p, -np.sqrt(1 / 3) * sig_z, -np.sqrt(2 / 3) * sig_m])
+        
+        E_mat = ops.build_E_mat_MPS(a_tensor_arr).real
+        Ez_mat = ops.build_E_mat_MPS(a_tensor_arr, sz_sprs).real
+        exp_sz = np.diag(np.exp(1j * np.pi * sz_sprs.diagonal()))
+        Eexpz_mat = ops.build_E_mat_MPS(a_tensor_arr, exp_sz).real
+
+        N = 30
+    
+        string_corr_list = np.zeros((N - 1,))
+        for i in range(N - 1):
+            idx_arr = np.arange(i + 2)
+            op_arr = np.array([Ez_mat if (idx == 0 or idx == i + 1) else Eexpz_mat for idx in idx_arr])
+            string_corr_list[i] =  ops.corr_func_MPS(N, E_mat, idx_arr, op_arr)
+        assert np.abs(string_corr_list[0]) > 0
+        string_corr_list_diff = string_corr_list - string_corr_list[0]
+        assert np.allclose(string_corr_list_diff, 0, atol=1e-12)
+
+        
+
+

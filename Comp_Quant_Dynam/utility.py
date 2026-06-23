@@ -422,9 +422,9 @@ def MCMC_Sampler_Metropolis_Hastings(model, params, init_state, num_samples, PRN
             s_prime = s_prime_flat.reshape(s.shape)
         
             # Probability of accepting the proposed s_prime
-            p_accept = jnp.minimum(1.0, jnp.exp((2*jnp.real(model.apply(params,s_prime))
+            p_accept = jnp.minimum(1.0, jnp.exp((2 * jnp.real(model.apply(params, s_prime))
                     -
-                    2*jnp.real(model.apply(params,s))
+                    2 * jnp.real(model.apply(params, s))
                 )) )
 
             u = jax.random.uniform(key_accept)

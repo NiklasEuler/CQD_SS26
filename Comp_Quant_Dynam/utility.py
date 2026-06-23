@@ -299,6 +299,7 @@ def Husimi_top(N, psi, nx, ny):
 
 ###################### Solution sheet 8 ######################
 
+
 def partial_trace(psi, M):
     """
     Computes the reduced density matrix obtained by tracing out `M` spins from a pure state `psi` of `N` spins.
@@ -333,9 +334,20 @@ def entanglement_entropy(rho):
     S = -Tr(rho log2(rho)) = -sum_i p_i log2(p_i)
     where p_i are the eigenvalues of rho. The function first computes the eigenvalues of rho, then filters out any eigenvalues that are zero (or very close to zero) to avoid issues with the logarithm, and finally computes the entropy using the formula above.
     """
-    ps = get_evals(rho)
-    # Numerical noise can produce tiny negative eigenvalues; exclude non-positive values.
-    ps = ps[ps > 1e-12]
+
+    evals = get_evals(rho)
+    
+    ps = entanglement_entropy_from_evals(evals) 
+    return ps
+
+def entanglement_entropy_from_evals(evals):
+    """
+    Computes the von Neumann entanglement entropy from a list of eigenvalues `evals` of a density matrix.
+    This function is useful if you already have the eigenvalues of the reduced density matrix and want to compute the entanglement entropy without having to reconstruct the density matrix itself.
+    The function filters out any eigenvalues that are zero (or very close to zero) to avoid issues with the logarithm, and then computes the entropy using the formula S = -sum_i p_i log2(p_i).
+    """
+
+    ps = evals[evals > 1e-12]
     return -np.sum(ps * np.log2(ps))
 
 def trace_half_collective(psi):
@@ -353,3 +365,22 @@ def trace_half_collective(psi):
             coeff = np.sqrt(binom(N / 2, i) * binom(N / 2, j))
             rho_red[i,j] = coeff * np.sum(rho[i + pvec, j + pvec] * binom(N / 2, pvec) / np.sqrt(binom(N, i + pvec) * binom(N, j + pvec)))
     return rho_red
+
+
+###################### Solution sheet 9 ######################
+
+
+def n_party_idx2state(idx, local_dim, N):
+    """
+    Converts a single index `idx` to a 'state' in the product Hilbert space of dimension `local_dim^N`.
+    The basis ordering is assumed to be |0...00>, |0...01>, ..., |(local_dim-1)...(local_dim-1)>, where the last spin corresponds to the least significant bit.
+    The function returns a state vector of length `N`, where each entry corresponds to the local state of each spin in the product state.
+    """
+    state = np.zeros((N,), dtype='int32')
+    rest = idx
+    for i in range(N - 1):
+        div = rest // (local_dim ** (N - i - 1))
+        state[i] = 1 - div
+        rest = rest % (local_dim ** (N - i - 1))
+    state[N - 1] = 1-rest
+    return state

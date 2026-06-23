@@ -480,3 +480,40 @@ class Test_build_H_TFIM_A2A:
         S_A_coll = util.entanglement_entropy(rho_red_coll)
         assert np.isclose(S_A, S_A_coll, atol=1e-6) # check that the entanglement entropy computed from the A2A Hamiltonian matches the entanglement entropy computed from the collective Hamiltonian, which should be the same since the A2A Hamiltonian is designed to reproduce the dynamics of the collective Hamiltonian in the symmetric subspace
 
+
+###################### Solution sheet 9 ######################
+
+
+class Test_build_H_AKLT:
+
+    N = 10
+    
+    def test_build_H_AKLT_periodic(self):
+        H_AKLT = ham.build_H_AKLT(self.N, open_bc=False).real
+        evals = eigsh(H_AKLT, k=2, which='SA', return_eigenvectors=False)
+        evals.sort()
+        gap = evals[1] - evals[0]
+        assert gap > 0 # check that the energy gap is positive, which means that the ground state is unique and the system is gapped
+
+    def test_build_H_AKLT_open(self):
+        H_AKLT = ham.build_H_AKLT(self.N, open_bc=True).real
+        evals = eigsh(H_AKLT, k=2, which='SA', return_eigenvectors=False)
+        evals.sort()
+        gap = evals[1] - evals[0]
+        assert gap < 1e-10 # check that the energy gap is approximately zero, which means that the ground state is degenerate and the system is gapless
+
+    def test_build_H_AKLT_theta_large(self):
+        theta = 1
+        H_AKLT = ham.build_H_AKLT(self.N, open_bc=False, theta=theta).real
+        evals = eigsh(H_AKLT, k=2, which='SA', return_eigenvectors=False)
+        evals.sort()
+        gap = evals[1] - evals[0]
+        assert gap < 1e-10 # check that the energy gap is approximately zero, which means that the ground state is degenerate and the system is gapless
+
+    def test_build_H_AKLT_theta_small(self):
+        theta = 0.1
+        H_AKLT = ham.build_H_AKLT(self.N, open_bc=False, theta=theta).real
+        evals = eigsh(H_AKLT, k=2, which='SA', return_eigenvectors=False)
+        evals.sort()
+        gap = evals[1] - evals[0]
+        assert gap > 0 # check that the energy gap is positive, which means that the ground state is unique and the system is gapped

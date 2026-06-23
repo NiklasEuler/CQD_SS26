@@ -3,6 +3,9 @@ from numpy import linalg as LA
 from collections.abc import Iterable, Sequence
 from numpy import pi, sin, cos, tan, arcsin, arccos, arctan, sqrt, exp
 from scipy.special import factorial, binom
+import jax
+import jax.numpy as jnp
+
 
 
 def example_func(x):
@@ -402,3 +405,54 @@ def n_party_idx2state(idx, local_dim, N):
 
     
     return np.int64(-1 * (state - (local_dim - 1) / 2)) # invert 
+
+
+###################### Solution sheet 10 ######################
+
+
+def MCMC_Sampler_Metropolis_Hastings(model, params, init_state, num_samples, PRNGkey):
+    """ 
+    Performs Markov Chain Monte Carlo Sampling based on the Metropolis-Hastings algorithm,
+    based on a flax-`model`, starting from initial spin state `init_state`, 
+    by flipping random spins over a full sweep over N_spins.
+    """
+    
+    def MCMC_step(carry, _):
+        s, key = carry
+
+        num_spins = s.shape[0]
+
+        def full_sweep_body(carry, _):
+            # perform a full sweep over N_spins to generate minimally autocorrelated samples 
+            s, key = carry
+
+            key, key_idx, key_accept = jax.random.split(key, 3)
+
+            s_flat = s.ravel()
+            
+            # Propose a new state 
+            idx = jax.random.randint(key_idx, shape=(), minval=0, maxval=num_spins)
+            flipped_value = 1 - s_flat[idx]
+
+            s_prime_flat = s_flat.at[idx].set(flipped_value)
+            s_prime = s_prime_flat.reshape(s.shape)
+        
+            # Probability of accepting the proposed s_prime
+            p_accept = jnp.minimum(1.0, jnp.exp((2*jnp.real(model.apply(params,s_prime))
+                    -
+                    2*jnp.real(model.apply(params,s))
+                )) )
+
+            u = jax.random.uniform(key_accept)
+            accept = u < p_accept
+            s_next = jnp.where(accept, s_prime, s)
+
+            return (s_next, key), None
+        
+        (next_s, next_key), _ = jax.lax.scan(full_sweep_body, (s, key), None, length=num_samples)
+
+        return (next_s, next_key), next_s
+
+    _, samples = jax.lax.scan(MCMC_step, (init_state, PRNGkey), None, length=num_samples)
+
+    return samples 

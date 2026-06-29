@@ -444,8 +444,8 @@ def MCMC_Sampler_Metropolis_Hastings(model, params, init_state, num_samples, PRN
 
 class Jastrow(nn.Module):
         """
-        A simple Jastrow model entangeling nearest and next-to nearest neighbours based on a flax.linen module. 
-        The output is a real valued variational wave function with parameters J1 and J2.
+        A simple Jastrow model entangling nearest and next-to-nearest neighbours (Flax Linen module).
+        The output is log(psi) for a real-valued variational wave function with parameters j1 and j2.
         """
 
         @nn.compact
@@ -468,7 +468,7 @@ class FFNN(nn.Module):
         The weights are initialized randomly and the biases are set to zero. 
         The features tuple defines the number of neurons in each layer of the network.
         One should choose a sensible nonlinear activation function.
-        The output is a real valued variational wave function.
+        The output is log(psi) for a real-valued variational wave function.
         """
 
         features: tuple 

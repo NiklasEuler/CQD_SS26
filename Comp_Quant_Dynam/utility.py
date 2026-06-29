@@ -373,26 +373,10 @@ def trace_half_collective(psi):
 
 ###################### Solution sheet 9 ######################
 
-
-def n_party_idx2state_old(idx, local_dim, N):
-    """
-    Converts a single index `idx` to a 'state' in the product Hilbert space of dimension `local_dim^N`.
-    The basis ordering is assumed to be |0...00>, |0...01>, ..., |(local_dim-1)...(local_dim-1)>, where the last spin corresponds to the least significant bit.
-    The function returns a state vector of length `N`, where each entry corresponds to the local state of each spin in the product state.
-    """
-    state = np.zeros((N,), dtype='int32')
-    rest = idx
-    for i in range(N - 1):
-        div = rest // (local_dim ** (N - i - 1))
-        state[i] = 1 - div
-        rest = rest % (local_dim ** (N - i - 1))
-    state[N - 1] = 1-rest
-    return state
-
 def n_party_idx2state(idx, local_dim, N):
     """
     Converts a single index `idx` to a 'state' in the product Hilbert space of dimension `local_dim^N`.
-    The basis ordering is assumed to be |0...00>, |0...01>, ..., |(local_dim-1)...(local_dim-1)>, where the last spin corresponds to the least significant bit.
+    The basis ordering is assumed to be |-k,-k,...,-k>, |-k,-k,...,-k+1>, ..., |k,k,...,k>, where k = (local_dim - 1) / 2, and the last spin corresponds to the least significant bit. 
     The function returns a state vector of length `N`, where each entry corresponds to the local state of each spin in the product state.
     """
     state = np.zeros((N,), dtype='int32')
@@ -405,7 +389,7 @@ def n_party_idx2state(idx, local_dim, N):
     state[N - 1] = rest
 
     
-    return np.int64(-1 * (state - (local_dim - 1) / 2)) # invert 
+    return np.int64((state - (local_dim - 1) / 2)) # invert #-1 * 
 
 
 ###################### Solution sheet 10 ######################
@@ -439,9 +423,9 @@ def MCMC_Sampler_Metropolis_Hastings(model, params, init_state, num_samples, PRN
             s_prime = s_prime_flat.reshape(s.shape)
         
             # Probability of accepting the proposed s_prime
-            p_accept = jnp.minimum(1.0, jnp.exp((2*jnp.real(model.apply(params,s_prime))
+            p_accept = jnp.minimum(1.0, jnp.exp((2 * jnp.real(model.apply(params, s_prime))
                     -
-                    2*jnp.real(model.apply(params,s))
+                    2 * jnp.real(model.apply(params, s))
                 )) )
 
             u = jax.random.uniform(key_accept)

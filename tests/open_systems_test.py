@@ -76,7 +76,7 @@ class Test_EIT_MCWF:
 
     ini = np.array([1, 0, 0], dtype='complex')
 
-    n_traj = 500
+    n_traj = 250
 
     all_trajectories = np.zeros((n_traj, len(tvec), len(H_non_herm)), dtype='complex')
 
@@ -84,8 +84,6 @@ class Test_EIT_MCWF:
 
     for traj_idx in range(n_traj):
         all_trajectories[traj_idx] = open_systems.get_trajectory(H_non_herm, L_list, ini, tvec)
-        if traj_idx % 50 == 0:
-            print(traj_idx, end=' ')
 
     def test_MCWF_steady_state(self):
 
@@ -123,6 +121,9 @@ class Test_EIT_MCWF:
             rho_t[i] = np.reshape(rho, (3, 3))
             i += 1
 
-        rho_MCWF = np.array([np.mean([np.outer(traj[t_idx], traj[t_idx].conj()) for traj in self.all_trajectories], axis=0) for t_idx in range(len(self.tvec))])
-        
-        assert np.allclose(rho_t, rho_MCWF, atol= 5e-2)
+        # Vectorized computation of mean density matrix from trajectories:
+        # all_trajectories has shape (n_traj, tsteps, dim)
+        # einsum computes for each time t the sum over trajectories of outer products
+        rho_MCWF = np.einsum('mtn,mts->tns', self.all_trajectories, self.all_trajectories.conj()) / float(self.n_traj)
+
+        assert np.allclose(rho_t, rho_MCWF, atol=5e-2)

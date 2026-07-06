@@ -151,8 +151,8 @@ def build_L_mat_EIT(params):
     dim_H = H.shape[0] 
     dim_L = dim_H ** 2
     L_mat = np.zeros((dim_L, dim_L), dtype='complex')
-    for i in range(9):
-        L_mat[:, i] = ME_RHS(pij(dim_H ,i // dim_H, i % dim_H).reshape((9,)), H, L_list)
+    for i in range(dim_L):
+        L_mat[:, i] = ME_RHS(pij(dim_H ,i // dim_H, i % dim_H).reshape((dim_L,)), H, L_list)
         
     return L_mat
 
@@ -182,7 +182,7 @@ def get_jump_probs(L_list, psi, dt):
 
     jump_probs = np.zeros((len(L_list),))
     for i in range(len(L_list)):
-        jump_probs[i] = np.real(dt * psi.conjugate().T @ L_list[i].T @ L_list[i] @ psi)
+        jump_probs[i] = np.real(dt * psi.conjugate().T @ L_list[i].conjugate().T @ L_list[i] @ psi)
     return jump_probs
 
 def trajectory_step(Hnh, L_list, psi, dt):

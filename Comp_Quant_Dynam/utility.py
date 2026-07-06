@@ -781,6 +781,6 @@ def pij(dim, i, j):
     Constructs a matrix operator that has a 1 at the (i, j) position and 0 elsewhere, in a Hilbert space of dimension `dim`.
     """
 
-    operator = np.zeros((dim, dim))
+    operator = np.zeros((dim, dim), dtype=complex)
     operator[i, j] = 1
     return operator

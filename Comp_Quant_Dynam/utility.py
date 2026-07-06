@@ -776,38 +776,11 @@ def perform_gs_search_tilted_GPU_accelerated(model, init_params, N_spins, B, g, 
 ###################### Solution sheet 11 ######################
 
 
-# using the trace condition
-def tr_reduce_L(L_mat):
+def pij(dim, i, j):
     """
-    Reduces the Liouvillian matrix `L_mat` to account for the trace condition Tr(rho) = 1 when solving for the steady state density matrix.
-    The function constructs a reduced Liouvillian matrix `L_mat_red` and a corresponding vector `b_vec` such that the steady state can be found by solving the linear system L_mat_red * rho_ss = b_vec. The reduction is performed by eliminating the first row and column of the Liouvillian matrix and adjusting the last column to account for the trace condition.
-    """
-    
-    dim_L = len(L_mat)
-    dim_H = int(np.sqrt(dim_L))
-    L_mat_red = np.copy(L_mat[1:, 1:])
-    b_vec = np.zeros((dim_L - 1,), dtype='complex')
-    for i in range(1, dim_L):
-        for k in range(1, dim_H):
-            L_mat_red[i - 1, -1 + k * (dim_H + 1)] -= L_mat[i, 0]
-        b_vec[i - 1] = -L_mat[i, 0]
-    return L_mat_red, b_vec
-
-# calculate the steady state, return rho in matrix form
-def rho_ss(L_mat):
-    """
-    Calculate the steady state density matrix for a given Liouvillian matrix `L_mat`. The steady state is obtained by solving the linear system L * rho_ss = 0, subject to the trace condition Tr(rho_ss) = 1.
-    The function first reduces the Liouvillian matrix to account for the trace condition, then solves the resulting linear system to find the steady state vector, which is reshaped into a density matrix form.
+    Constructs a matrix operator that has a 1 at the (i, j) position and 0 elsewhere, in a Hilbert space of dimension `dim`.
     """
 
-    dim_L = len(L_mat)
-    dim_H = int(np.sqrt(dim_L))
-    L_mat_red, b_vec = tr_reduce_L(L_mat)
-    ss = LA.solve(L_mat_red, b_vec)
-    ss_full = np.zeros((dim_L,), dtype='complex')
-    ss_full[0] = 1
-    for k in range(1, dim_H):
-        ss_full[0] -= ss[-1 + k * (dim_H + 1)]
-    ss_full[1:] = ss
-    ss_mat = ss_full.reshape((dim_H, dim_H))
-    return ss_mat
+    operator = np.zeros((dim, dim))
+    operator[i, j] = 1
+    return operator

@@ -408,11 +408,11 @@ def build_H_AKLT(N, theta=np.arctan(1 / 3), open_bc=False):
 ###################### Solution sheet 10 ######################
 
 
-def build_H_tilted_TFIM_individual(N, ome, g):
+def build_H_tilted_TFIM_individual(N, omega, g):
     """
-    Builds the Hamiltonian matrix for the tilted transverse field Ising model (TFIM) for `N` spin-1/2 particles and transverse field strength `ome` and longitudinal field strength `g` as a sparse matrix
+    Builds the Hamiltonian matrix for the tilted transverse field Ising model (TFIM) for `N` spin-1/2 particles and transverse field strength `omega` and longitudinal field strength `g` as a sparse matrix
     The Hamiltonian is given by:
-    H = - sum_i sigma_z^i sigma_z^{i+1} - ome * sum_i sigma_x^i - g * sum_i sigma_z^i
+    H = - sum_i sigma_z^i sigma_z^{i+1} - omega * sum_i sigma_x^i - g * sum_i sigma_z^i
     where sigma_z^i and sigma_x^i are the Pauli z and x operators acting on the i-th particle, respectively, and we assume periodic boundary conditions, i.e., sigma_z^N = sigma_z^0.
     """
     
@@ -423,7 +423,7 @@ def build_H_tilted_TFIM_individual(N, ome, g):
     dim_global = 2 ** N
     H = sparse.csr_array((dim_global, dim_global), dtype=complex)
     for i in range(N):
-        H -= ome * sig_x[i]
+        H -= omega * sig_x[i]
         H -= g * sig_z[i]
         H -= sig_z[i] @ sig_z[(i + 1) % N] # periodic boundary conditions
     return H

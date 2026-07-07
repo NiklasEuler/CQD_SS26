@@ -3,6 +3,7 @@ import numpy.linalg as LA
 
 from Comp_Quant_Dynam.utility import pij
 from Comp_Quant_Dynam.integrators import Euler_step
+from Comp_Quant_Dynam.hamiltonians import build_H_EIT
 
 
 ##################### Exercise sheet 11 ######################
@@ -79,14 +80,7 @@ def build_EIT_operators(params):
     """
 
     # build the Hamiltonian
-    H = np.array(
-        [
-            [0, 0, -params["omegaP"] / 2],
-            [0, params["DeltaP"] - params["DeltaC"], -params["omegaC"] / 2],
-            [-params["omegaP"] / 2, -params["omegaC"] / 2, params["DeltaP"]]
-        ],
-        dtype='complex'
-    )
+    H = build_H_EIT(params)
     dim_H = len(H)
 
     # build jump operators
@@ -113,14 +107,7 @@ def build_EIT_operators_ladder_scheme(params):
     """
 
     # build the Hamiltonian
-    H = np.array(
-        [
-            [0, 0, -params["omegaP"] / 2],
-            [0, params["DeltaP"] - params["DeltaC"], -params["omegaC"] / 2],
-            [-params["omegaP"] / 2, -params["omegaC"] / 2, params["DeltaP"]]
-        ],
-        dtype='complex'
-    )
+    H = build_H_EIT(params)
     dim_H = len(H)
 
     # build jump operators

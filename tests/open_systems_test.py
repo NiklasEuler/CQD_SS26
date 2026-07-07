@@ -127,3 +127,19 @@ class Test_EIT_MCWF:
         rho_MCWF = np.einsum('mtn,mts->tns', self.all_trajectories, self.all_trajectories.conj()) / float(self.n_traj)
 
         assert np.allclose(rho_t, rho_MCWF, atol=5e-2)
+
+    def test_build_EIT_operators_ladder_scheme(self):
+        """
+        Test that the build_EIT_operators function returns the correct Hamiltonian and Lindblad operators for a three-level ladder system.
+        """
+
+        H_ladder, L_list_ladder = open_systems.build_EIT_operators_ladder_scheme(self.params)
+
+        # Check that the Hamiltonian is Hermitian
+        assert np.allclose(H_ladder, H_ladder.conj().T)
+
+        assert np.allclose(H_ladder, self.H)
+    
+        assert np.allclose(L_list_ladder[0].T, self.L_list[0])
+
+        assert np.allclose(L_list_ladder[1], self.L_list[1])

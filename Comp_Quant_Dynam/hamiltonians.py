@@ -427,3 +427,26 @@ def build_H_tilted_TFIM_individual(N, omega, g):
         H -= g * sig_z[i]
         H -= sig_z[i] @ sig_z[(i + 1) % N] # periodic boundary conditions
     return H
+
+
+###################### Solution sheet 10 ######################
+
+
+def build_H_EIT(params):
+    """
+    Builds the Hamiltonian matrix for the atom-laser interaction in the EIT configuration for a three-level atom with parameters `params.
+    The Hamiltonian is given by:
+    H = [[0, 0, -omegaP/2],
+         [0, DeltaP - DeltaC, -omegaC/2],
+         [-omegaP/2, -omegaC/2, DeltaP]]
+    where omegaP and omegaC are the Rabi frequencies of the probe and control lasers, respectively, and DeltaP and DeltaC are the detunings of the probe and control lasers, respectively.
+    """
+    H = np.array(
+        [
+            [0, 0, -params["omegaP"] / 2],
+            [0, params["DeltaP"] - params["DeltaC"], -params["omegaC"] / 2],
+            [-params["omegaP"] / 2, -params["omegaC"] / 2, params["DeltaP"]]
+        ],
+        dtype='complex'
+    )
+    return H
